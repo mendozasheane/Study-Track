@@ -1092,14 +1092,43 @@ function postAnnouncement() {
 
 }
 
-
 // ==========================================
-// CHANGE STUDENT / TEACHER PORTAL
+// LOGIN FUNCTION
 // ==========================================
 
-role.addEventListener("change", function() {
+loginForm.addEventListener("submit", function(e) {
 
-    currentRole = role.value;
+    e.preventDefault();
+
+    const selectedRole = loginRole.value;
+    const username = loginUsername.value.trim();
+    const password = loginPassword.value;
+
+    if (
+        selectedRole === "student" &&
+        username === "student" &&
+        password === "student123"
+    ) {
+        currentRole = "student";
+    }
+
+    else if (
+        selectedRole === "teacher" &&
+        username === "teacher" &&
+        password === "teacher123"
+    ) {
+        currentRole = "teacher";
+    }
+
+    else {
+        loginError.textContent = "Invalid username or password.";
+        return;
+    }
+
+    loginError.textContent = "";
+
+    loginPage.style.display = "none";
+    appLayout.style.display = "flex";
 
     portal.textContent =
         currentRole.toUpperCase() + " PORTAL";
@@ -1107,6 +1136,25 @@ role.addEventListener("change", function() {
     showPage("Dashboard");
 
 });
+
+
+// ==========================================
+// LOGOUT FUNCTION
+// ==========================================
+
+btnLogout.addEventListener("click", function() {
+
+    appLayout.style.display = "none";
+    loginPage.style.display = "flex";
+
+    loginForm.reset();
+
+    loginError.textContent = "";
+
+    portal.textContent = "WELCOME";
+
+});
+
 
 
 // ==========================================
