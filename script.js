@@ -1,11 +1,20 @@
-
+  
 // ==========================================
 // STUDYTRACK - STUDENT ACADEMIC MANAGEMENT
 // ==========================================
 
 
 // GET HTML ELEMENTS
-const role = document.getElementById("role");
+// LOGIN ELEMENTS
+const loginPage = document.getElementById("loginPage");
+const loginForm = document.getElementById("loginForm");
+const loginRole = document.getElementById("loginRole");
+const loginUsername = document.getElementById("loginUsername");
+const loginPassword = document.getElementById("loginPassword");
+const loginError = document.getElementById("loginError");
+
+const appLayout = document.getElementById("appLayout");
+const btnLogout = document.getElementById("btnLogout");
 const navigation = document.getElementById("navigation");
 const content = document.getElementById("content");
 const heading = document.getElementById("heading");
@@ -26,7 +35,8 @@ const studentMenu = [
     "Academic Performance",
     "My Task",
     "Exam Planner",
-    "Study Planner"
+    "Study Planner",
+    "Announcements"
 ];
 
 
@@ -35,8 +45,6 @@ const teacherMenu = [
     "Dashboard",
     "My Profile",
     "Manage Students",
-    "Manage Grades",
-    "Manage Tasks",
     "Exam Schedule",
     "Announcements"
 ];
@@ -60,11 +68,11 @@ let tasks = [
         status: "Pending"
     },
     {
-        title: "Database Assignment",
+        title: "Contemporary",
         status: "Completed"
     },
     {
-        title: "Web Development Project",
+        title: "UTS",
         status: "Pending"
     }
 ];
@@ -74,31 +82,31 @@ let tasks = [
 let grades = [
     {
         student: "Sheane Mendoza",
-        subject: "Programming 2",
+        subject: "UTS",
         midterm: "1.75",
         final: "1.50",
         average: "1.63",
         remarks: "Passed"
     },
     {
-        student: "Sheane Mendoza",
-        subject: "Database Management",
+        student: "Dwayne Rafinan",
+        subject: "Contemporary",
         midterm: "2.00",
         final: "1.75",
         average: "1.88",
         remarks: "Passed"
     },
     {
-        student: "Alex Reyes",
-        subject: "Programming 2",
+        student: "Vince Salvador",
+        subject: "Komfil",
         midterm: "2.00",
         final: "2.00",
         average: "2.00",
         remarks: "Passed"
     },
     {
-        student: "Alex Reyes",
-        subject: "Database Management",
+        student: "Geishamae Calleja",
+        subject: "Fundamentals",
         midterm: "2.25",
         final: "2.00",
         average: "2.13",
@@ -106,15 +114,27 @@ let grades = [
     }
 ];
 
+let studentsList = [
+    {
+        id: "2026-0001",
+        name: "Sheane Mendoza",
+        course: "BS Information Technology",
+        year: "First Year",
+        email: "sheane@example.com"
+    }
+];
+
+let totalSubjects = 8;
+
 
 // SAMPLE EXAM SCHEDULE
-const exams = [
+let exams = [
     {
-        subject: "Database Management",
+        subject: "Contemporary",
         date: "November 18, 2026"
     },
     {
-        subject: "Programming 2",
+        subject: "Fundamentals",
         date: "November 22, 2026"
     }
 ];
@@ -122,6 +142,9 @@ const exams = [
 
 // ANNOUNCEMENTS
 let announcements = [];
+
+
+let studyPlans = [];
 
 
 // ==========================================
@@ -148,8 +171,11 @@ function showMenu() {
         }
 
         button.addEventListener("click", function() {
-            showPage(item);
-            sidebar.classList.remove("open");
+
+    showPage(item);
+
+    sidebar.classList.remove("open");
+
         });
 
         navigation.appendChild(button);
@@ -206,9 +232,9 @@ function dashboard() {
                 </div>
 
                 <div class="stat">
-                    <small>Total Subjects</small>
-                    <strong>${studentGrades.length}</strong>
-                </div>
+    <small>Total Subjects</small>
+    <strong>${totalSubjects}</strong>
+</div>
 
             </div>
 
@@ -247,9 +273,7 @@ function dashboard() {
 
     else {
 
-        const totalStudents = new Set(
-            grades.map(g => g.student)
-        ).size;
+        const totalStudents = studentsList.length;
 
         content.innerHTML = `
 
@@ -303,7 +327,43 @@ function dashboard() {
 
             </div>
 
+            <div class="card">
+    <h3>Manage Total Subjects</h3>
+
+    <label>Number of Subjects</label>
+
+    <input
+        type="number"
+        id="subjectCount"
+        min="1"
+        value="${totalSubjects}"
+    >
+
+    <button class="btn" id="saveSubjectCount">
+        Save Changes
+    </button>
+</div>
+
         `;
+
+              document.getElementById("saveSubjectCount")
+            .addEventListener("click", function() {
+
+                const newTotal = Number(
+                    document.getElementById("subjectCount").value
+                );
+
+                if (!Number.isInteger(newTotal) || newTotal < 1) {
+                    alert("Please enter a valid number.");
+                    return;
+                }
+
+                totalSubjects = newTotal;
+
+                alert("Total subjects updated!");
+
+                dashboard();
+            });
 
     }
 
@@ -314,8 +374,7 @@ function dashboard() {
 // SHOW PAGE
 // ==========================================
 
-function showPage(page) {
-
+ function showPage(page) {
     heading.textContent = page;
 
 
@@ -327,6 +386,7 @@ function showPage(page) {
     }
 
 
+    
     // MY PROFILE
     else if (page === "My Profile") {
 
@@ -336,29 +396,42 @@ function showPage(page) {
 
                 <h3>My Profile</h3>
 
-                <p><b>Student ID:</b> ${student.id}</p>
+                <label>Student ID</label>
+                <input type="text" value="${student.id}" disabled>
 
-                <p><b>Complete Name:</b> ${student.name}</p>
+                <label>Complete Name</label>
+                <input type="text" id="profileName" value="${student.name}">
 
-                <p><b>Course:</b> ${student.course}</p>
+                <label>Course</label>
+                <input type="text" id="profileCourse" value="${student.course}">
 
-                <p><b>Department:</b> ${student.department}</p>
+                <label>Department</label>
+                <input type="text" id="profileDepartment" value="${student.department}">
 
-                <p><b>Year Level:</b> ${student.year}</p>
+                <label>Year Level</label>
+                <input type="text" id="profileYear" value="${student.year}">
 
-                <p><b>Email Address:</b> ${student.email}</p>
+                <label>Email Address</label>
+                <input type="email" id="profileEmail" value="${student.email}">
+
+                <button class="btn" id="saveProfileBtn">
+                    Save Changes
+                </button>
 
             </div>
 
         `;
 
+        document.getElementById("saveProfileBtn")
+            .addEventListener("click", saveProfile);
+
     }
+
 
 
     // MY GRADES AND MANAGE GRADES
     else if (
-        page === "My Grades" ||
-        page === "Manage Grades"
+        page === "My Grades"
     ) {
 
         const visibleGrades = currentRole === "student"
@@ -451,6 +524,292 @@ function showPage(page) {
                         ${studentGrades.map(g => `
 
                             <tr>
+                                <td>${g.subject}</td>
+                                <td>${g.midterm}</td>
+                                <td>${g.final}</td>
+                                <td>${g.average}</td>
+                                <td>${g.remarks}</td>
+                            </tr>
+
+                        `).join("")}
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>Performance Summary</h3>
+
+                <p>
+                    Your academic performance is based
+                    on your recorded subject grades.
+                </p>
+
+                <p>
+                    Continue completing your academic
+                    requirements and preparing for examinations.
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+
+// MY TASK
+else if (page === "My Task") {
+
+    content.innerHTML = `
+        <div class="card">
+            <h3>My Task</h3>
+
+            ${tasks.length > 0
+                ? tasks.map((task, index) => `
+                    <div class="card">
+                        <p>
+                            <b>${task.title}</b>
+                            — <span class="badge">${task.status}</span>
+                        </p>
+
+                        ${task.status !== "Completed" ? `
+                            <button class="btn complete-task"
+                                data-index="${index}">
+                                Complete
+                            </button>
+                        ` : ""}
+
+                        <button class="btn delete-task"
+                            data-index="${index}">
+                            Delete
+                        </button>
+                    </div>
+                `).join("")
+                : `<p>No tasks available.</p>`
+            }
+
+            <label for="newTask">Add New Task</label>
+            <input type="text" id="newTask"
+                placeholder="Enter task name">
+
+            <button class="btn" id="addTaskBtn">
+                Add Task
+            </button>
+        </div>
+    `;
+
+    document.getElementById("addTaskBtn")
+        .addEventListener("click", addTask);
+
+    document.querySelectorAll(".complete-task")
+        .forEach(button => {
+            button.addEventListener("click", function() {
+                completeTask(Number(this.dataset.index));
+            });
+        });
+
+    document.querySelectorAll(".delete-task")
+        .forEach(button => {
+            button.addEventListener("click", function() {
+                deleteTask(Number(this.dataset.index));
+            });
+        });
+}
+
+
+    // EXAM PLANNER AND EXAM SCHEDULE
+    else if (
+        page === "Exam Planner" ||
+        page === "Exam Schedule"
+    ) {
+
+        content.innerHTML = `
+
+            <div class="card">
+
+                <h3>${page}</h3>
+
+                ${exams.length > 0
+                    ? exams.map((exam, index) => `
+                        <p>
+                            <b>${index + 1}. ${exam.subject}</b>
+                            <br>
+                            Date: ${exam.date}
+                            <br>
+                            Time: ${exam.time || "Not specified"}
+                            <br>
+                            Room: ${exam.room || "Not specified"}
+                        </p>
+                        <hr>
+                    `).join("")
+                    : `<p>No exam schedules yet.</p>`
+                }
+
+                ${currentRole === "teacher" ? `
+
+                    <hr>
+
+                    <h3>Add Exam Schedule</h3>
+
+                    <label>Subject</label>
+                    <input type="text" id="examSubject"
+                        placeholder="Enter subject">
+
+                    <label>Exam Date</label>
+                    <input type="date" id="examDate">
+
+                    <label>Exam Time</label>
+                    <input type="time" id="examTime">
+
+                    <label>Room</label>
+                    <input type="text" id="examRoom"
+                        placeholder="Enter room">
+
+                    <button class="btn" id="addExamBtn">
+                        Add Exam
+                    </button>
+
+                ` : ""}
+
+            </div>
+
+        `;
+
+        if (currentRole === "teacher") {
+            document.getElementById("addExamBtn")
+                .addEventListener("click", addTeacherExam);
+        }
+
+    }
+
+
+
+    
+// STUDY PLANNER
+else if (page === "Study Planner") {
+
+    content.innerHTML = `
+        <div class="card">
+            <h3>Study Planner</h3>
+            <p>Organize your study time and activities.</p>
+
+            <label>Subject</label>
+            <input type="text" id="studySubject"
+                placeholder="Enter subject">
+
+            <label>Study Topic</label>
+            <input type="text" id="studyTopic"
+                placeholder="Enter study topic">
+
+            <label>Study Date</label>
+            <input type="date" id="studyDate">
+
+            <label>Study Time</label>
+            <input type="time" id="studyTime">
+
+            <button class="btn" id="addStudyBtn">
+                Add Study Plan
+            </button>
+        </div>
+
+        <div class="card">
+            <h3>My Study Schedule</h3>
+
+            ${studyPlans.length > 0
+                ? studyPlans.map((plan, index) => `
+                    <div class="card">
+                        <p><b>${plan.subject}</b></p>
+                        <p>Topic: ${plan.topic}</p>
+                        <p>Date: ${plan.date}</p>
+                        <p>Time: ${plan.time}</p>
+                        <p>Status: <span class="badge">${plan.status || "Pending"}</span></p>
+
+                        ${plan.status !== "Completed" ? `
+                            <button class="btn complete-study"
+                                data-index="${index}">
+                                Complete
+                            </button>
+                        ` : ""}
+
+                        <button class="btn delete-study"
+                            data-index="${index}">
+                            Delete
+                        </button>
+                    </div>
+                `).join("")
+                : `<p>No study plans added yet.</p>`
+            }
+        </div>
+    `;
+
+    document.getElementById("addStudyBtn")
+        .addEventListener("click", addStudyPlan);
+
+    document.querySelectorAll(".complete-study")
+        .forEach(button => {
+            button.addEventListener("click", function() {
+                completeStudyPlan(Number(this.dataset.index));
+            });
+        });
+
+    document.querySelectorAll(".delete-study")
+        .forEach(button => {
+            button.addEventListener("click", function() {
+                deleteStudyPlan(Number(this.dataset.index));
+            });
+        });
+}
+
+    
+// MANAGE STUDENTS
+else if (page === "Manage Students") {
+
+    content.innerHTML = `
+
+        <div class="card">
+
+            <h3>Add Student</h3>
+
+            <label>Student ID</label>
+            <input type="text" id="newStudentID"
+                placeholder="Enter Student ID">
+
+            <label>Complete Name</label>
+            <input type="text" id="newStudentName"
+                placeholder="Enter complete name">
+
+            <label>Course</label>
+            <input type="text" id="newStudentCourse"
+                placeholder="Enter course">
+
+            <label>Year Level</label>
+            <input type="text" id="newStudentYear"
+                placeholder="Enter year level">
+
+            <label>Email Address</label>
+            <input type="email" id="newStudentEmail"
+                placeholder="Enter email">
+
+            <button class="btn" id="addStudentBtn">
+                Add Student
+            </button>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Student List</h3>
+
+            ${studentsList.map((student, index) => `
+
+                <p>
+                    ${index + 1}. ${student.id} -
+                    ${student.name}
+           <tr>
                                 <td>${g.subject}</td>
                                 <td>${g.midterm}</td>
                                 <td>${g.final}</td>
