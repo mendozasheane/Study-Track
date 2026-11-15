@@ -473,18 +473,23 @@ if (page === "Register") {
             loginError.textContent = "";
         });
 
-
     // BACK TO LOGIN BUTTON
-    document.getElementById("backToLogin")
-        .addEventListener("click", function() {
+document.getElementById("backToLogin")
+    .addEventListener("click", function() {
 
-            appLayout.style.display = "none";
-            loginPage.style.display = "flex";
+        alert("Back button clicked!");
 
-            loginForm.reset();
-            loginError.textContent = "";
+        showPage("Dashboard");
 
-        });
+        appLayout.style.display = "none";
+        loginPage.style.display = "flex";
+
+        loginForm.reset();
+        loginError.textContent = "";
+
+        currentRole = "student";
+
+    });
 
 }
 
