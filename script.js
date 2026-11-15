@@ -184,7 +184,6 @@ function showMenu() {
 
 }
 
-
 // ==========================================
 // DASHBOARD
 // ==========================================
@@ -193,24 +192,16 @@ function dashboard() {
 
     if (currentRole === "student") {
 
-        const studentGrades = grades.filter(
-            g => g.student === student.name
-        );
-
         content.innerHTML = `
 
             <div class="welcome">
-
                 <h2>Welcome back, ${student.name}!</h2>
-
                 <p>
                     Welcome to your academic dashboard.
                     Manage your tasks, grades, and study schedule
                     in one place.
                 </p>
-
             </div>
-
 
             <div class="grid">
 
@@ -232,30 +223,44 @@ function dashboard() {
                 </div>
 
                 <div class="stat">
-    <small>Total Subjects</small>
-    <strong>${totalSubjects}</strong>
-</div>
+                    <small>Total Subjects</small>
+                    <strong>${totalSubjects}</strong>
+                </div>
 
             </div>
 
+            <div class="card">
+                <h3>Manage Total Subjects</h3>
+
+                <p>Update the number of your current subjects.</p>
+
+                <label>Number of Subjects</label>
+
+                <input
+                    type="number"
+                    id="subjectCount"
+                    min="1"
+                    value="${totalSubjects}"
+                >
+
+                <button class="btn" id="saveSubjectCount">
+                    Save Changes
+                </button>
+            </div>
 
             <div class="card">
-
                 <h3>Recent Tasks</h3>
 
                 ${tasks.map(task => `
                     <p>
-                        ${task.title}
-                        —
+                        ${task.title} —
                         <span class="badge">${task.status}</span>
                     </p>
                 `).join("")}
 
             </div>
 
-
             <div class="card">
-
                 <h3>Upcoming Exams</h3>
 
                 ${exams.map(exam => `
@@ -268,6 +273,25 @@ function dashboard() {
             </div>
 
         `;
+
+        document.getElementById("saveSubjectCount")
+            .addEventListener("click", function() {
+
+                const newTotal = Number(
+                    document.getElementById("subjectCount").value
+                );
+
+                if (!Number.isInteger(newTotal) || newTotal < 1) {
+                    alert("Please enter a valid number.");
+                    return;
+                }
+
+                totalSubjects = newTotal;
+
+                alert("Total subjects updated!");
+
+                dashboard();
+            });
 
     }
 
@@ -287,7 +311,6 @@ function dashboard() {
                 </p>
 
             </div>
-
 
             <div class="grid">
 
@@ -315,9 +338,7 @@ function dashboard() {
 
             </div>
 
-
             <div class="card">
-
                 <h3>Recent Announcements</h3>
 
                 ${announcements.length > 0
@@ -327,47 +348,13 @@ function dashboard() {
 
             </div>
 
-            <div class="card">
-    <h3>Manage Total Subjects</h3>
-
-    <label>Number of Subjects</label>
-
-    <input
-        type="number"
-        id="subjectCount"
-        min="1"
-        value="${totalSubjects}"
-    >
-
-    <button class="btn" id="saveSubjectCount">
-        Save Changes
-    </button>
-</div>
-
         `;
-
-              document.getElementById("saveSubjectCount")
-            .addEventListener("click", function() {
-
-                const newTotal = Number(
-                    document.getElementById("subjectCount").value
-                );
-
-                if (!Number.isInteger(newTotal) || newTotal < 1) {
-                    alert("Please enter a valid number.");
-                    return;
-                }
-
-                totalSubjects = newTotal;
-
-                alert("Total subjects updated!");
-
-                dashboard();
-            });
 
     }
 
 }
+
+
 
 // ==========================================
  // SHOW PAGE
@@ -717,87 +704,142 @@ function showPage(page) {
     }
 
     // MANAGE STUDENTS
-    else if (page === "Manage Students") {
+else if (page === "Manage Students") {
 
-        content.innerHTML = `
-            <div class="card">
-                <h3>Add Student</h3>
+    content.innerHTML = `
 
-                <label>Student ID</label>
-                <input id="newStudentID" placeholder="Enter Student ID">
+        <div class="card">
 
-                <label>Complete Name</label>
-                <input id="newStudentName" placeholder="Enter complete name">
+            <h3>Add Student</h3>
 
-                <label>Course</label>
-                <input id="newStudentCourse" placeholder="Enter course">
+            <label>Student ID</label>
+            <input id="newStudentID" placeholder="Enter Student ID">
 
-                <label>Year Level</label>
-                <input id="newStudentYear" placeholder="Enter year level">
+            <label>Complete Name</label>
+            <input id="newStudentName" placeholder="Enter complete name">
 
-                <label>Email Address</label>
-                <input type="email" id="newStudentEmail" placeholder="Enter email">
+            <label>Course</label>
+            <input id="newStudentCourse" placeholder="Enter course">
 
-                <button class="btn" id="addStudentBtn">Add Student</button>
-            </div>
+            <label>Year Level</label>
+            <input id="newStudentYear" placeholder="Enter year level">
 
-            <div class="card">
-                <h3>Student List</h3>
-                ${studentsList.map((s, index) => `
-                    <p>${index + 1}. ${s.id} - ${s.name} (${s.course})</p>
-                `).join("")}
-            </div>
-        `;
+            <label>Email Address</label>
+            <input type="email" id="newStudentEmail" placeholder="Enter email">
 
-        document.getElementById("addStudentBtn")
-            .addEventListener("click", function() {
+            <button class="btn" id="addStudentBtn">
+                Add Student
+            </button>
 
-                const id = document.getElementById("newStudentID").value.trim();
-                const name = document.getElementById("newStudentName").value.trim();
-                const course = document.getElementById("newStudentCourse").value.trim();
-                const year = document.getElementById("newStudentYear").value.trim();
-                const email = document.getElementById("newStudentEmail").value.trim();
+        </div>
 
-                if (!id || !name || !course || !year || !email) {
-                    alert("Please complete all student information.");
-                    return;
-                }
+        <div class="card">
 
-                studentsList.push({ id, name, course, year, email });
-                alert("Student added!");
-                showPage("Manage Students");
+            <h3>Student List</h3>
+
+            ${studentsList.length > 0
+                ? studentsList.map((s, index) => `
+                    <p>
+                        ${index + 1}. ${s.id} —
+                        ${s.name} (${s.course}, ${s.year})
+                    </p>
+                `).join("")
+                : `<p class="empty-message">No students added yet.</p>`
+            }
+
+        </div>
+
+    `;
+
+    document.getElementById("addStudentBtn")
+        .addEventListener("click", function() {
+
+            const id = document.getElementById("newStudentID").value.trim();
+            const name = document.getElementById("newStudentName").value.trim();
+            const course = document.getElementById("newStudentCourse").value.trim();
+            const year = document.getElementById("newStudentYear").value.trim();
+            const email = document.getElementById("newStudentEmail").value.trim();
+
+            if (!id || !name || !course || !year || !email) {
+                alert("Please complete all student information.");
+                return;
+            }
+
+            const existingStudent = studentsList.some(s => s.id === id);
+
+            if (existingStudent) {
+                alert("Student ID already exists.");
+                return;
+            }
+
+            studentsList.push({
+                id,
+                name,
+                course,
+                year,
+                email
             });
+
+            alert("Student added successfully!");
+
+            showPage("Manage Students");
+
+    });
+
+}
+
+   // ANNOUNCEMENTS
+else if (page === "Announcements") {
+
+    content.innerHTML = `
+
+        <div class="card">
+            <h3>Class Announcements</h3>
+
+            ${currentRole === "teacher" ? `
+
+                <label>Announcement</label>
+
+                <textarea
+                    id="announcement"
+                    placeholder="Write your announcement here..."
+                ></textarea>
+
+                <button class="btn" id="postAnnouncementBtn">
+                    Post Announcement
+                </button>
+
+            ` : `
+
+                <p>
+                    View the latest announcements posted by your teacher.
+                </p>
+
+            `}
+
+        </div>
+
+        <div class="card">
+
+            <h3>Posted Announcements</h3>
+
+            ${announcements.length > 0
+                ? announcements.map(a => `<p>${a}</p>`).join("")
+                : `<p class="empty-message">No announcements yet.</p>`
+            }
+
+        </div>
+
+    `;
+
+    if (currentRole === "teacher") {
+
+        document.getElementById("postAnnouncementBtn")
+            .addEventListener("click", postAnnouncement);
+
     }
 
-    // ANNOUNCEMENTS
-    else if (page === "Announcements") {
-
-        content.innerHTML = `
-            <div class="card">
-                <h3>Class Announcements</h3>
-
-                ${currentRole === "teacher" ? `
-                    <label>Announcement</label>
-                    <textarea id="announcement" placeholder="Write announcement"></textarea>
-                    <button class="btn" id="postAnnouncementBtn">Post Announcement</button>
-                ` : ""}
-            </div>
-
-            <div class="card">
-                <h3>Posted Announcements</h3>
-                ${announcements.length > 0
-                    ? announcements.map(a => <p>${a}</p>).join("")
-                    : <p class="empty-message">No announcements yet.</p>
-                }
-            </div>
-        `;
-
-        if (currentRole === "teacher") {
-            document.getElementById("postAnnouncementBtn")
-                .addEventListener("click", postAnnouncement);
-        }
-    }
-
+}
     showMenu();
 }
 
@@ -836,30 +878,34 @@ function addTask() {
 
 }
 
-
 // ==========================================
 // POST ANNOUNCEMENT FUNCTION
 // ==========================================
 
 function postAnnouncement() {
 
+    if (currentRole !== "teacher") {
+        alert("Only teachers can post announcements.");
+        return;
+    }
+
     const input = document.getElementById("announcement");
 
     const message = input.value.trim();
 
     if (message === "") {
-
         alert("Please write an announcement.");
-
         return;
-
     }
 
     announcements.push(message);
 
+    alert("Announcement posted successfully!");
+
     showPage("Announcements");
 
 }
+
 
 // ==========================================
 // LOGIN FUNCTION
