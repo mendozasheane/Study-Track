@@ -124,11 +124,14 @@ let studentsList = [
     }
 ];
 
-// ==========================================
-// STUDENT ACCOUNTS
-// ==========================================
 
-let studentAccounts = [
+ // ==========================================
+ // STUDENT ACCOUNTS
+ // ==========================================
+
+let studentAccounts = JSON.parse(
+    localStorage.getItem("studentAccounts")
+) || [
     {
         id: "2026-0001",
         name: "Sheane Mendoza",
@@ -136,6 +139,14 @@ let studentAccounts = [
         password: "student123"
     }
 ];
+
+function saveStudentAccounts() {
+    localStorage.setItem(
+        "studentAccounts",
+        JSON.stringify(studentAccounts)
+    );
+}
+
 
 let totalSubjects = 8;
 
