@@ -440,9 +440,19 @@ if (page === "Register") {
                 return;
             }
 
-            const studentExists = studentsList.some(
-                s => s.id === id
-            );
+           const registeredStudent = studentsList.find(
+    s => s.id === id
+);
+
+if (!registeredStudent) {
+    alert("Please ask your teacher to add your Student ID first.");
+    return;
+}
+
+if (registeredStudent.name.toLowerCase() !== name.toLowerCase()) {
+    alert("Your name does not match the student record.");
+    return;
+}
 
             if (!studentExists) {
                 alert("Please ask your teacher to add your Student ID first.");
@@ -450,16 +460,16 @@ if (page === "Register") {
             }
 
             studentAccounts.push({
-                id,
-                name,
-                username,
-                password
-            });
+    id,
+    name: registeredStudent.name,
+    username,
+    password
+});
 
             alert("Registration successful! You can now log in.");
 
-loginPage.style.display = "none";
-appLayout.style.display = "flex";
+appLayout.style.display = "none";
+loginPage.style.display = "flex";
 
 loginForm.reset();
 loginError.textContent = "";          
