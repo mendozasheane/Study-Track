@@ -512,7 +512,10 @@ document.getElementById("backToLogin")
     }
 
     // MY PROFILE
-    else if (page === "My Profile") {
+else if (page === "My Profile") {
+
+    // STUDENT MY PROFILE
+    if (currentRole === "student") {
 
         content.innerHTML = `
             <div class="card">
@@ -536,7 +539,9 @@ document.getElementById("backToLogin")
                 <label>Email Address</label>
                 <input type="email" id="profileEmail" value="${student.email}">
 
-                <button class="btn" id="saveProfileBtn">Save Changes</button>
+                <button class="btn" id="saveProfileBtn">
+                    Save Changes
+                </button>
             </div>
         `;
 
@@ -555,6 +560,7 @@ document.getElementById("backToLogin")
                 }
 
                 studentsList[0].name = student.name;
+
                 grades.forEach(g => {
                     if (g.student === "Sheane Mendoza") {
                         g.student = student.name;
@@ -564,8 +570,33 @@ document.getElementById("backToLogin")
                 alert("Profile updated!");
                 showPage("My Profile");
             });
+
     }
 
+    // TEACHER MY PROFILE
+    else {
+
+        content.innerHTML = `
+            <div class="card">
+                <h3>My Profile</h3>
+
+                <label>Teacher ID</label>
+                <input value="T-2026-001" disabled>
+
+                <label>Complete Name</label>
+                <input value="Juan Dela Cruz" disabled>
+
+                <label>Department</label>
+                <input value="College of Computer Studies" disabled>
+
+                <label>Email Address</label>
+                <input value="teacher@example.com" disabled>
+            </div>
+        `;
+
+    }
+
+}
     // MY GRADES
     else if (page === "My Grades") {
 
