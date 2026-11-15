@@ -405,10 +405,14 @@ if (page === "Register") {
                 placeholder="Create Password">
 
             <button class="btn" id="registerBtn">
-                Register Account
-            </button>
+    Register Account
+</button>
 
-            <p id="registerMessage"></p>
+<button class="btn" id="backToLogin">
+    Back to Login
+</button>
+
+<p id="registerMessage"></p>
 
         </div>
 
