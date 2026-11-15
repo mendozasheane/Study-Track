@@ -468,12 +468,14 @@ if (page === "Register") {
                 return;
             }
 
-            studentAccounts.push({
-                id: id,
-                name: registeredStudent.name,
-                username: username,
-                password: password
-            });
+           studentAccounts.push({
+    id: id,
+    name: registeredStudent.name,
+    username: username.toLowerCase(),
+    password: password
+});
+
+saveStudentAccounts();
 
             alert("Registration successful! You can now log in.");
 
@@ -1190,9 +1192,8 @@ loginForm.addEventListener("submit", function(e) {
     const password = loginPassword.value;
 
     if (selectedRole === "student") {
-
     const account = studentAccounts.find(
-        s => s.username === username &&
+        s => s.username.toLowerCase() === username.toLowerCase() &&
              s.password === password
     );
 
