@@ -376,7 +376,12 @@ function dashboard() {
 function showPage(page) {
 
     heading.textContent = page;
-
+  if (page === "Register") {
+    sidebar.style.display = "none";
+} else {
+    sidebar.style.display = "";
+}
+  
   // STUDENT REGISTRATION
 if (page === "Register") {
 
@@ -453,10 +458,11 @@ if (page === "Register") {
 
             alert("Registration successful! You can now log in.");
 
-loginPage.style.display = "flex";
-appLayout.style.display = "none";
+loginPage.style.display = "none";
+appLayout.style.display = "flex";
 
 loginForm.reset();
+loginError.textContent = "";          
 
         });
 
