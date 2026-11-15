@@ -40,11 +40,11 @@ const studentMenu = [
 ];
 
 
-// TEACHER MENU
 const teacherMenu = [
     "Dashboard",
     "My Profile",
     "Manage Students",
+    "Manage Grades",
     "Exam Schedule",
     "Announcements"
 ];
@@ -785,6 +785,120 @@ else if (page === "Manage Students") {
             showPage("Manage Students");
 
     });
+
+}
+
+  // MANAGE GRADES
+else if (page === "Manage Grades") {
+
+    content.innerHTML = `
+
+        <div class="card">
+
+            <h3>Add Student Grades</h3>
+
+            <label>Select Student</label>
+
+            <select id="gradeStudent">
+
+                ${studentsList.map(s => `
+                    <option value="${s.name}">
+                        ${s.name}
+                    </option>
+                `).join("")}
+
+            </select>
+
+            <label>Subject</label>
+            <input id="gradeSubject" placeholder="Enter subject">
+
+            <label>Midterm Grade</label>
+            <input type="number" id="midtermGrade"
+                step="0.01" min="1" max="5">
+
+            <label>Final Grade</label>
+            <input type="number" id="finalGrade"
+                step="0.01" min="1" max="5">
+
+            <button class="btn" id="saveGradeBtn">
+                Save Grade
+            </button>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Grade Records</h3>
+
+            ${grades.map(g => `
+                <p>
+                    <b>${g.student}</b><br>
+                    Subject: ${g.subject}<br>
+                    Midterm: ${g.midterm}<br>
+                    Final: ${g.final}<br>
+                    Average: ${g.average}<br>
+                    Remarks: ${g.remarks}
+                </p>
+                <hr>
+            `).join("")}
+
+        </div>
+
+    `;
+
+    document.getElementById("saveGradeBtn")
+        .addEventListener("click", function() {
+
+            const selectedStudent =
+                document.getElementById("gradeStudent").value;
+
+            const subject =
+                document.getElementById("gradeSubject").value.trim();
+
+            const midterm =
+                Number(document.getElementById("midtermGrade").value);
+
+            const final =
+                Number(document.getElementById("finalGrade").value);
+
+            if (
+                !selectedStudent ||
+                !subject ||
+                !document.getElementById("midtermGrade").value ||
+                !document.getElementById("finalGrade").value
+            ) {
+                alert("Please complete all grade information.");
+                return;
+            }
+
+            if (
+                midterm < 1 || midterm > 5 ||
+                final < 1 || final > 5
+            ) {
+                alert("Grades must be between 1.00 and 5.00.");
+                return;
+            }
+
+            const average = ((midterm + final) / 2).toFixed(2);
+
+            const remarks = Number(average) <= 3
+                ? "Passed"
+                : "Failed";
+
+            grades.push({
+                student: selectedStudent,
+                subject: subject,
+                midterm: midterm.toFixed(2),
+                final: final.toFixed(2),
+                average: average,
+                remarks: remarks
+            });
+
+            alert("Student grade saved successfully!");
+
+            showPage("Manage Grades");
+
+        });
 
 }
 
