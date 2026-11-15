@@ -124,6 +124,19 @@ let studentsList = [
     }
 ];
 
+// ==========================================
+// STUDENT ACCOUNTS
+// ==========================================
+
+let studentAccounts = [
+    {
+        id: "2026-0001",
+        name: "Sheane Mendoza",
+        username: "student",
+        password: "student123"
+    }
+];
+
 let totalSubjects = 8;
 
 
@@ -364,8 +377,90 @@ function showPage(page) {
 
     heading.textContent = page;
 
+  // STUDENT REGISTRATION
+if (page === "Register") {
+
+    content.innerHTML = `
+
+        <div class="card">
+
+            <h3>Student Registration</h3>
+
+            <label>Student ID</label>
+            <input id="registerID" placeholder="Enter Student ID">
+
+            <label>Complete Name</label>
+            <input id="registerName" placeholder="Enter Complete Name">
+
+            <label>Username</label>
+            <input id="registerUsername" placeholder="Create Username">
+
+            <label>Password</label>
+            <input type="password" id="registerPassword"
+                placeholder="Create Password">
+
+            <button class="btn" id="registerBtn">
+                Register Account
+            </button>
+
+            <p id="registerMessage"></p>
+
+        </div>
+
+    `;
+
+    document.getElementById("registerBtn")
+        .addEventListener("click", function() {
+
+            const id = document.getElementById("registerID").value.trim();
+            const name = document.getElementById("registerName").value.trim();
+            const username = document.getElementById("registerUsername").value.trim();
+            const password = document.getElementById("registerPassword").value;
+
+            if (!id || !name || !username || !password) {
+                alert("Please complete all fields.");
+                return;
+            }
+
+            const existingID = studentAccounts.some(
+                s => s.id === id
+            );
+
+            const existingUsername = studentAccounts.some(
+                s => s.username.toLowerCase() === username.toLowerCase()
+            );
+
+            if (existingID || existingUsername) {
+                alert("Student ID or Username already exists.");
+                return;
+            }
+
+            const studentExists = studentsList.some(
+                s => s.id === id
+            );
+
+            if (!studentExists) {
+                alert("Please ask your teacher to add your Student ID first.");
+                return;
+            }
+
+            studentAccounts.push({
+                id,
+                name,
+                username,
+                password
+            });
+
+            alert("Registration successful! You can now log in.");
+
+            showPage("Dashboard");
+
+        });
+
+}
+
     // DASHBOARD
-    if (page === "Dashboard") {
+    else if (page === "Dashboard") {
         dashboard();
     }
 
@@ -1020,6 +1115,22 @@ function postAnnouncement() {
 
 }
 
+// ==========================================
+// OPEN STUDENT REGISTRATION
+// ==========================================
+
+document.getElementById("showRegister")
+    .addEventListener("click", function() {
+
+        loginPage.style.display = "none";
+        appLayout.style.display = "flex";
+
+        currentRole = "student";
+
+        showPage("Register");
+
+    });
+
 
 // ==========================================
 // LOGIN FUNCTION
@@ -1033,13 +1144,25 @@ loginForm.addEventListener("submit", function(e) {
     const username = loginUsername.value.trim();
     const password = loginPassword.value;
 
-    if (
-        selectedRole === "student" &&
-        username === "student" &&
-        password === "student123"
-    ) {
+    if (selectedRole === "student") {
+
+    const account = studentAccounts.find(
+        s => s.username === username &&
+             s.password === password
+    );
+
+    if (account) {
         currentRole = "student";
+
+        student.id = account.id;
+        student.name = account.name;
+
+    } else {
+        loginError.textContent = "Invalid student username or password.";
+        return;
     }
+
+}
 
     else if (
         selectedRole === "teacher" &&
