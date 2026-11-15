@@ -382,11 +382,10 @@ function showPage(page) {
     sidebar.style.display = "";
 }
   
-  // STUDENT REGISTRATION
+// STUDENT REGISTRATION
 if (page === "Register") {
 
     content.innerHTML = `
-
         <div class="card">
 
             <h3>Student Registration</h3>
@@ -404,20 +403,20 @@ if (page === "Register") {
             <input type="password" id="registerPassword"
                 placeholder="Create Password">
 
-            <button class="btn" id="registerBtn">
-    Register Account
-</button>
+            <button type="button" class="btn" id="registerBtn">
+                Register Account
+            </button>
 
-<button class="btn" id="backToLogin">
-    Back to Login
-</button>
+            <button type="button" class="btn" id="backToLogin">
+                Back to Login
+            </button>
 
-<p id="registerMessage"></p>
+            <p id="registerMessage"></p>
 
         </div>
-
     `;
 
+    // REGISTER BUTTON
     document.getElementById("registerBtn")
         .addEventListener("click", function() {
 
@@ -444,39 +443,46 @@ if (page === "Register") {
                 return;
             }
 
-           const registeredStudent = studentsList.find(
-    s => s.id === id
-);
+            const registeredStudent = studentsList.find(
+                s => s.id === id
+            );
 
-if (!registeredStudent) {
-    alert("Please ask your teacher to add your Student ID first.");
-    return;
-}
-
-if (registeredStudent.name.toLowerCase() !== name.toLowerCase()) {
-    alert("Your name does not match the student record.");
-    return;
-}
-
-            if (!studentExists) {
+            if (!registeredStudent) {
                 alert("Please ask your teacher to add your Student ID first.");
                 return;
             }
 
+            if (registeredStudent.name.toLowerCase() !== name.toLowerCase()) {
+                alert("Your name does not match the student record.");
+                return;
+            }
+
             studentAccounts.push({
-    id,
-    name: registeredStudent.name,
-    username,
-    password
-});
+                id: id,
+                name: registeredStudent.name,
+                username: username,
+                password: password
+            });
 
             alert("Registration successful! You can now log in.");
 
-appLayout.style.display = "none";
-loginPage.style.display = "flex";
+            appLayout.style.display = "none";
+            loginPage.style.display = "flex";
 
-loginForm.reset();
-loginError.textContent = "";          
+            loginForm.reset();
+            loginError.textContent = "";
+        });
+
+
+    // BACK TO LOGIN BUTTON
+    document.getElementById("backToLogin")
+        .addEventListener("click", function() {
+
+            appLayout.style.display = "none";
+            loginPage.style.display = "flex";
+
+            loginForm.reset();
+            loginError.textContent = "";
 
         });
 
