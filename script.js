@@ -51,7 +51,7 @@ const teacherMenu = [
 
 
 // SAMPLE STUDENT INFORMATION
-const student = {
+let student = {
     name: "Sheane Mendoza",
     id: "2026-0001",
     course: "BS Information Technology",
@@ -453,7 +453,10 @@ if (page === "Register") {
 
             alert("Registration successful! You can now log in.");
 
-            showPage("Dashboard");
+loginPage.style.display = "flex";
+appLayout.style.display = "none";
+
+loginForm.reset();
 
         });
 
