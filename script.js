@@ -1214,8 +1214,10 @@ function postAnnouncement() {
 // OPEN STUDENT REGISTRATION
 // ==========================================
 
-document.getElementById("showRegister")
-    .addEventListener("click", function() {
+const showRegisterButton = document.getElementById("showRegister");
+
+if (showRegisterButton) {
+    showRegisterButton.addEventListener("click", function() {
 
         loginPage.style.display = "none";
         appLayout.style.display = "flex";
@@ -1225,6 +1227,7 @@ document.getElementById("showRegister")
         showPage("Register");
 
     });
+}
 
 
 // ==========================================
