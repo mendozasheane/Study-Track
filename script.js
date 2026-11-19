@@ -1567,8 +1567,6 @@ document.getElementById("registerLink")
 
     });
 
-}
-
 
 // ==========================================
 // LOGIN FUNCTION
