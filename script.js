@@ -266,11 +266,6 @@ let announcements = [];
 
 let studyPlans = [];
 
-
-// ==========================================
-// SHOW NAVIGATION MENU
-// ==========================================
-
 // ==========================================
 // SHOW NAVIGATION MENU
 // ==========================================
@@ -1180,14 +1175,17 @@ else if (page === "My Profile") {
         });
     }
 
-    // MANAGE STUDENTS
+   // ==========================================
+// MANAGE STUDENTS
+// ==========================================
+
 else if (page === "Manage Students") {
 
     content.innerHTML = `
 
         <div class="card">
 
-            <h3>Add Student</h3>
+            <h3>Add New Student</h3>
 
             <label>Student ID</label>
             <input id="newStudentID" placeholder="Enter Student ID">
@@ -1196,13 +1194,34 @@ else if (page === "Manage Students") {
             <input id="newStudentName" placeholder="Enter complete name">
 
             <label>Course</label>
-            <input id="newStudentCourse" placeholder="Enter course">
+            <select id="newStudentCourse">
+                <option value="">Select Course</option>
+                <option value="BSIT">BSIT</option>
+                <option value="BSIS">BSIS</option>
+            </select>
+
+            <label>Section</label>
+            <select id="newStudentSection">
+                <option value="">Select Section</option>
+                ${getAvailableSections().map(section => `
+                    <option value="${escapeHTML(section)}">
+                        ${escapeHTML(section)}
+                    </option>
+                `).join("")}
+            </select>
 
             <label>Year Level</label>
-            <input id="newStudentYear" placeholder="Enter year level">
+            <select id="newStudentYear">
+                <option value="">Select Year Level</option>
+                <option value="First Year">First Year</option>
+                <option value="Second Year">Second Year</option>
+                <option value="Third Year">Third Year</option>
+                <option value="Fourth Year">Fourth Year</option>
+            </select>
 
             <label>Email Address</label>
-            <input type="email" id="newStudentEmail" placeholder="Enter email">
+            <input type="email" id="newStudentEmail"
+                placeholder="Enter email address">
 
             <button class="btn" id="addStudentBtn">
                 Add Student
@@ -1212,37 +1231,66 @@ else if (page === "Manage Students") {
 
         <div class="card">
 
-            <h3>Student List</h3>
+            <h3>Student Records</h3>
 
-            ${studentsList.length > 0
-                ? studentsList.map((s, index) => `
-                    <p>
-                        ${index + 1}. ${s.id} —
-                        ${s.name} (${s.course}, ${s.year})
-                    </p>
-                `).join("")
-                : `<p class="empty-message">No students added yet.</p>`
-            }
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Complete Name</th>
+                            <th>Course</th>
+                            <th>Section</th>
+                            <th>Year Level</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        ${studentsList.map(s => `
+                            <tr>
+                                <td>${escapeHTML(s.id)}</td>
+                                <td>${escapeHTML(s.name)}</td>
+                                <td>${escapeHTML(s.course)}</td>
+                                <td>${escapeHTML(s.section)}</td>
+                                <td>${escapeHTML(s.year)}</td>
+                                <td>${escapeHTML(s.email)}</td>
+                            </tr>
+                        `).join("")}
+
+                    </tbody>
+
+                </table>
+
+            </div>
 
         </div>
 
     `;
 
+
+    // ADD STUDENT
     document.getElementById("addStudentBtn")
         .addEventListener("click", function() {
 
             const id = document.getElementById("newStudentID").value.trim();
             const name = document.getElementById("newStudentName").value.trim();
-            const course = document.getElementById("newStudentCourse").value.trim();
-            const year = document.getElementById("newStudentYear").value.trim();
+            const course = document.getElementById("newStudentCourse").value;
+            const section = document.getElementById("newStudentSection").value;
+            const year = document.getElementById("newStudentYear").value;
             const email = document.getElementById("newStudentEmail").value.trim();
 
-            if (!id || !name || !course || !year || !email) {
+            if (!id || !name || !course || !section || !year || !email) {
                 alert("Please complete all student information.");
                 return;
             }
 
-            const existingStudent = studentsList.some(s => s.id === id);
+            const existingStudent = studentsList.some(
+                s => s.id === id
+            );
 
             if (existingStudent) {
                 alert("Student ID already exists.");
@@ -1253,15 +1301,18 @@ else if (page === "Manage Students") {
                 id,
                 name,
                 course,
+                section,
                 year,
                 email
             });
+
+            saveStudentRecords();
 
             alert("Student added successfully!");
 
             showPage("Manage Students");
 
-    });
+        });
 
 }
 
