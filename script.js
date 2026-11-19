@@ -1580,36 +1580,46 @@ loginForm.addEventListener("submit", function(e) {
     const username = loginUsername.value.trim();
     const password = loginPassword.value;
 
-    if (selectedRole === "student") {
-    const account = studentAccounts.find(
-        s => s.username.toLowerCase() === username.toLowerCase() &&
-             s.password === password
-    );
+    if (!username || !password) {
+        loginError.textContent = "Please enter your username and password.";
+        return;
+    }
 
-    if (account) {
+    // STUDENT LOGIN
+    if (selectedRole === "student") {
+
+        const account = studentAccounts.find(s =>
+            s.username.toLowerCase() === username.toLowerCase() &&
+            s.password === password
+        );
+
+        if (!account) {
+            loginError.textContent = "Invalid student username or password.";
+            return;
+        }
+
         currentRole = "student";
 
         student.id = account.id;
         student.name = account.name;
 
+    }
+
+    // TEACHER LOGIN
+    else if (selectedRole === "teacher") {
+
+        if (username === "teacher" && password === "teacher123") {
+            currentRole = "teacher";
+        } else {
+            loginError.textContent = "Invalid teacher username or password.";
+            return;
+        }
+
     } else {
-        loginError.textContent = "Invalid student username or password.";
+
+        loginError.textContent = "Please select a valid role.";
         return;
-    }
 
-}
-
-    else if (
-        selectedRole === "teacher" &&
-        username === "teacher" &&
-        password === "teacher123"
-    ) {
-        currentRole = "teacher";
-    }
-
-    else {
-        loginError.textContent = "Invalid username or password.";
-        return;
     }
 
     loginError.textContent = "";
@@ -1617,8 +1627,7 @@ loginForm.addEventListener("submit", function(e) {
     loginPage.style.display = "none";
     appLayout.style.display = "flex";
 
-    portal.textContent =
-        currentRole.toUpperCase() + " PORTAL";
+    portal.textContent = currentRole.toUpperCase() + " PORTAL";
 
     showPage("Dashboard");
 
