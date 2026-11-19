@@ -118,9 +118,26 @@ let studentsList = [
     {
         id: "2026-0001",
         name: "Sheane Mendoza",
-        course: "BS Information Technology",
+        course: "BSIT",
+        section: "BSIT-1A",
         year: "First Year",
         email: "sheane@example.com"
+    },
+    {
+        id: "2026-0002",
+        name: "Mark Reyes",
+        course: "BSIT",
+        section: "BSIT-1B",
+        year: "First Year",
+        email: "mark@example.com"
+    },
+    {
+        id: "2026-0003",
+        name: "John Cruz",
+        course: "BSIS",
+        section: "BSIS-1A",
+        year: "First Year",
+        email: "john@example.com"
     }
 ];
 
