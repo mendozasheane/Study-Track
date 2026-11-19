@@ -114,7 +114,7 @@ let grades = [
     }
 ];
 
-let studentsList = [
+const defaultStudents = [
     {
         id: "2026-0001",
         name: "Sheane Mendoza",
@@ -140,6 +140,76 @@ let studentsList = [
         email: "john@example.com"
     }
 ];
+
+let studentsList = JSON.parse(
+    localStorage.getItem("studyTrackStudents")
+) || defaultStudents;
+
+let sections = JSON.parse(
+    localStorage.getItem("studyTrackSections")
+) || ["BSIT-1A", "BSIT-1B", "BSIS-1A", "BSIS-1B"];
+
+let editingExamIndex = null;
+
+function saveStudentRecords() {
+    localStorage.setItem(
+        "studyTrackStudents",
+        JSON.stringify(studentsList)
+    );
+}
+
+function saveSections() {
+    localStorage.setItem(
+        "studyTrackSections",
+        JSON.stringify(sections)
+    );
+}
+
+function saveExamSchedules() {
+    localStorage.setItem(
+        "studyTrackExams",
+        JSON.stringify(exams)
+    );
+}
+
+function getAvailableSections() {
+    return [...new Set([
+        ...sections,
+        ...studentsList.map(s => s.section).filter(Boolean)
+    ])].sort();
+}
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    }[character]));
+}
+
+function formatExamDate(dateValue) {
+    if (!dateValue) return "Not specified";
+
+    const match = String(dateValue).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+    if (match) {
+        const [, year, month, day] = match;
+
+        return new Date(
+            Number(year),
+            Number(month) - 1,
+            Number(day)
+        ).toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric"
+        });
+    }
+
+    return dateValue;
+}
 
 
  // ==========================================
