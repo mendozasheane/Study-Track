@@ -271,6 +271,10 @@ let studyPlans = [];
 // SHOW NAVIGATION MENU
 // ==========================================
 
+// ==========================================
+// SHOW NAVIGATION MENU
+// ==========================================
+
 function showMenu() {
 
     const menu = currentRole === "student"
@@ -291,16 +295,220 @@ function showMenu() {
         }
 
         button.addEventListener("click", function() {
-
-    showPage(item);
-
-    sidebar.classList.remove("open");
-
+            showPage(item);
+            sidebar.classList.remove("open");
         });
 
         navigation.appendChild(button);
 
     });
+
+    // TEACHER STUDENT LIST SECTIONS
+    if (currentRole === "teacher") {
+
+        const sectionTitle = document.createElement("p");
+        sectionTitle.className = "sidebar-section-title";
+        sectionTitle.textContent = "STUDENT LIST";
+
+        navigation.appendChild(sectionTitle);
+
+        const activeSection = heading.textContent.startsWith("Student List: ")
+            ? heading.textContent.replace("Student List: ", "")
+            : "";
+
+        getAvailableSections().forEach(section => {
+
+            const sectionButton = document.createElement("button");
+
+            sectionButton.className = "nav-link section-nav-link";
+            sectionButton.textContent = section;
+
+            if (activeSection === section) {
+                sectionButton.classList.add("active");
+            }
+
+            sectionButton.addEventListener("click", function() {
+                showSectionStudents(section);
+                sidebar.classList.remove("open");
+            });
+
+            navigation.appendChild(sectionButton);
+
+        });
+
+        // ADD SECTION BUTTON
+        const addSectionButton = document.createElement("button");
+
+        addSectionButton.type = "button";
+        addSectionButton.className = "add-section-link";
+        addSectionButton.textContent = "+ Add Section";
+
+        addSectionButton.addEventListener("click", function() {
+
+            const newSection = prompt(
+                "Enter section name (example: BSIT-2A):"
+            );
+
+            if (!newSection || !newSection.trim()) return;
+
+            const cleanSection = newSection.trim().toUpperCase();
+
+            const alreadyExists = getAvailableSections().some(
+                section => section.toUpperCase() === cleanSection
+            );
+
+            if (alreadyExists) {
+                alert("This section already exists.");
+                return;
+            }
+
+            sections.push(cleanSection);
+
+            saveSections();
+            showMenu();
+
+        });
+
+        navigation.appendChild(addSectionButton);
+
+    }
+
+}
+
+
+// ==========================================
+// SHOW STUDENTS BY SECTION
+// ==========================================
+
+function showSectionStudents(section) {
+
+    const sectionStudents = studentsList.filter(
+        s => s.section === section
+    );
+
+    heading.textContent = "Student List: " + section;
+
+    content.innerHTML = `
+
+        <div class="card">
+
+            <div class="section-page-heading">
+
+                <div>
+                    <h3>${escapeHTML(section)}</h3>
+                    <p>Students enrolled in this section.</p>
+                </div>
+
+                <span class="count-badge">
+                    ${sectionStudents.length} Student(s)
+                </span>
+
+            </div>
+
+            ${
+                sectionStudents.length > 0
+                ? `
+
+                    <div class="table-container">
+
+                        <table>
+
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Complete Name</th>
+                                    <th>Course</th>
+                                    <th>Year Level</th>
+                                    <th>Email Address</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                ${sectionStudents.map(s => {
+
+                                    const realIndex = studentsList.indexOf(s);
+
+                                    return `
+
+                                        <tr>
+                                            <td>${escapeHTML(s.id)}</td>
+                                            <td>${escapeHTML(s.name)}</td>
+                                            <td>${escapeHTML(s.course)}</td>
+                                            <td>${escapeHTML(s.year)}</td>
+                                            <td>${escapeHTML(s.email)}</td>
+
+                                            <td>
+                                                <button
+                                                    class="btn btn-danger delete-student"
+                                                    data-index="${realIndex}">
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+
+                                    `;
+
+                                }).join("")}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                `
+                : `
+                    <p class="empty-message">
+                        No students in this section yet.
+                        Add students through Manage Students.
+                    </p>
+                `
+            }
+
+        </div>
+
+    `;
+
+    // DELETE STUDENT
+    document.querySelectorAll(".delete-student").forEach(button => {
+
+        button.addEventListener("click", function() {
+
+            const index = Number(this.dataset.index);
+            const removedStudent = studentsList[index];
+
+            if (!removedStudent) return;
+
+            if (!confirm(
+                `Delete ${removedStudent.name} from ${section}?`
+            )) return;
+
+            studentsList.splice(index, 1);
+
+            saveStudentRecords();
+
+            studentAccounts = studentAccounts.filter(
+                account => account.id !== removedStudent.id
+            );
+
+            saveStudentAccounts();
+
+            grades = grades.filter(
+                grade => grade.student !== removedStudent.name
+            );
+
+            alert("Student record deleted.");
+
+            showSectionStudents(section);
+            showMenu();
+
+        });
+
+    });
+
+    showMenu();
 
 }
 
