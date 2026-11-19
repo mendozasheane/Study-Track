@@ -26,38 +26,49 @@
 
     </header>
 
-<!-- LOGIN PAGE -->
 <section id="loginPage" class="login-container">
-    <div class="card login-card">
 
-        <h2>Welcome to StudyTrack</h2>
-        <p>Please login to access your portal.</p>
+    <div class="login-left">
+        <h1>STUDYTRACK</h1>
+        <h2>Your Academic Journey Starts Here!</h2>
+        <p>
+            Manage your grades, organize your tasks,
+            and plan your studies in one place.
+        </p>
+    </div>
 
+    <div class="login-right">
         <form id="loginForm">
 
-            <label for="loginRole">Select Role</label>
+            <h2>Welcome Back!</h2>
+            <p>Login to your account</p>
+
+            <label>Select Role</label>
             <select id="loginRole">
                 <option value="student">Student</option>
                 <option value="teacher">Teacher</option>
             </select>
 
-            <label for="loginUsername">Username</label>
+            <label>Username</label>
             <input type="text" id="loginUsername"
-                placeholder="Enter username" required>
+                   placeholder="Enter username" required>
 
-            <label for="loginPassword">Password</label>
+            <label>Password</label>
             <input type="password" id="loginPassword"
-                placeholder="Enter password" required>
-
-            <button type="submit" class="btn">Login</button>
-            <button type="button" class="btn" id="showRegister">
-    Register as Student
-</button>
+                   placeholder="Enter password" required>
 
             <p id="loginError"></p>
 
+            <button type="submit">LOGIN</button>
+
+            <p>
+                Don't have an account?
+                <a href="#" id="registerLink">Register as Student</a>
+            </p>
+
         </form>
     </div>
+
 </section>
 
 
