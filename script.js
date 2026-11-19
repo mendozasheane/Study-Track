@@ -238,17 +238,26 @@ function saveStudentAccounts() {
 let totalSubjects = 8;
 
 
-// SAMPLE EXAM SCHEDULE
-let exams = [
+const defaultExams = [
     {
         subject: "Contemporary",
-        date: "November 18, 2026"
+        section: "All Sections",
+        date: "2026-11-18",
+        time: "",
+        room: ""
     },
     {
         subject: "Fundamentals",
-        date: "November 22, 2026"
+        section: "All Sections",
+        date: "2026-11-22",
+        time: "",
+        room: ""
     }
 ];
+
+let exams = JSON.parse(
+    localStorage.getItem("studyTrackExams")
+) || defaultExams;
 
 
 // ANNOUNCEMENTS
