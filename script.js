@@ -1939,41 +1939,6 @@ else if (page === "Announcements") {
     showMenu();
 }
 
-
-// ==========================================
-// ADD TASK FUNCTION
-// ==========================================
-
-function addTask() {
-
-    const input = document.getElementById("newTask");
-
-    const taskName = input.value.trim();
-
-    if (taskName === "") {
-
-        alert("Please enter a task name.");
-
-        return;
-
-    }
-
-    tasks.push({
-
-        title: taskName,
-
-        status: "Pending"
-
-    });
-
-    showPage(
-        currentRole === "student"
-            ? "My Task"
-            : "Manage Tasks"
-    );
-
-}
-
 // ==========================================
 // POST ANNOUNCEMENT FUNCTION
 // ==========================================
