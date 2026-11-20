@@ -791,3 +791,26 @@ textarea {
     }
 
 }
+.section-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.section-menu-item .section-nav-link {
+    flex: 1;
+}
+
+.delete-section-btn {
+    border: none;
+    background: transparent;
+    color: #dc3545;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+.delete-section-btn:hover {
+    background: #fee2e2;
+}
