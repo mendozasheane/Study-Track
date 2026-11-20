@@ -207,10 +207,6 @@ function formatExamDate(dateString) {
     });
 }
 
-    return dateValue;
-}
-
-
  // ==========================================
  // STUDENT ACCOUNTS
  // ==========================================
