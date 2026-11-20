@@ -1503,9 +1503,7 @@ else if (page === "Manage Grades") {
         });
 
 }
-You sent
-......
-You sent
+
 // MANAGE GRADES
 else if (page === "Manage Grades") {
 
