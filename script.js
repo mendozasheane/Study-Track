@@ -310,25 +310,54 @@ function showMenu() {
             ? heading.textContent.replace("Student List: ", "")
             : "";
 
-        getAvailableSections().forEach(section => {
+       getAvailableSections().forEach(section => {
 
-            const sectionButton = document.createElement("button");
+    const sectionWrapper = document.createElement("div");
+    sectionWrapper.className = "section-menu-item";
 
-            sectionButton.className = "nav-link section-nav-link";
-            sectionButton.textContent = section;
+    const sectionButton = document.createElement("button");
+    sectionButton.className = "nav-link section-nav-link";
+    sectionButton.textContent = section;
 
-            if (activeSection === section) {
-                sectionButton.classList.add("active");
-            }
+    sectionButton.addEventListener("click", function() {
+        showSectionStudents(section);
+        sidebar.classList.remove("open");
+    });
 
-            sectionButton.addEventListener("click", function() {
-                showSectionStudents(section);
-                sidebar.classList.remove("open");
-            });
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.className = "delete-section-btn";
+    deleteButton.textContent = "×";
+    deleteButton.title = "Delete Section";
 
-            navigation.appendChild(sectionButton);
+    deleteButton.addEventListener("click", function() {
 
-        });
+        const hasStudents = studentsList.some(
+            s => s.section === section
+        );
+
+        if (hasStudents) {
+            alert(
+                "This section still has students. Move the students to another section first."
+            );
+            return;
+        }
+
+        if (!confirm(`Delete section ${section}?`)) return;
+
+        sections = sections.filter(s => s !== section);
+
+        saveSections();
+        showMenu();
+
+    });
+
+    sectionWrapper.appendChild(sectionButton);
+    sectionWrapper.appendChild(deleteButton);
+
+    navigation.appendChild(sectionWrapper);
+
+});
 
         // ADD SECTION BUTTON
         const addSectionButton = document.createElement("button");
