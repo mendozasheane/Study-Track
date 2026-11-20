@@ -1430,24 +1430,24 @@ else if (page === "Manage Grades") {
 
         <div class="card">
 
-            <h3>Grade Records</h3>
+    <h3>Grade Records</h3>
 
-            ${grades.map(g => `
-                <p>
-                    <b>${g.student}</b><br>
-                    Subject: ${g.subject}<br>
-                    Midterm: ${g.midterm}<br>
-                    Final: ${g.final}<br>
-                    Average: ${g.average}<br>
-                    Remarks: ${g.remarks}
-                </p>
-                <hr>
-            `).join("")}
+    <label>Filter by Section</label>
 
-        </div>
+    <select id="gradeSectionFilter">
+        <option value="All Sections">All Sections</option>
 
-    `;
+        ${getAvailableSections().map(section => `
+            <option value="${escapeHTML(section)}">
+                ${escapeHTML(section)}
+            </option>
+        `).join("")}
 
+    </select>
+
+    <div id="gradeRecordsContainer"></div>
+
+</div>
     document.getElementById("saveGradeBtn")
         .addEventListener("click", function() {
 
