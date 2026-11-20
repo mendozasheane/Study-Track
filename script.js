@@ -75,42 +75,17 @@ function saveTasks() {
 }
 
 
-// SAMPLE GRADES
-let grades = [
-    {
-        student: "Sheane Mendoza",
-        subject: "UTS",
-        midterm: "1.75",
-        final: "1.50",
-        average: "1.63",
-        remarks: "Passed"
-    },
-    {
-        student: "Dwayne Rafinan",
-        subject: "Contemporary",
-        midterm: "2.00",
-        final: "1.75",
-        average: "1.88",
-        remarks: "Passed"
-    },
-    {
-        student: "Vince Salvador",
-        subject: "Komfil",
-        midterm: "2.00",
-        final: "2.00",
-        average: "2.00",
-        remarks: "Passed"
-    },
-    {
-        student: "Geishamae Calleja",
-        subject: "Fundamentals",
-        midterm: "2.25",
-        final: "2.00",
-        average: "2.13",
-        remarks: "Passed"
-    }
-];
+// GRADE RECORDS
+let grades = JSON.parse(
+    localStorage.getItem("studyTrackGrades")
+) || [];
 
+function saveGrades() {
+    localStorage.setItem(
+        "studyTrackGrades",
+        JSON.stringify(grades)
+    );
+}
 const defaultStudents = [
     {
         id: "2026-0001",
