@@ -189,24 +189,23 @@ function escapeHTML(value) {
     }[character]));
 }
 
-function formatExamDate(dateValue) {
-    if (!dateValue) return "Not specified";
+function formatExamDate(dateString) {
+    if (!dateString) return "Not specified";
 
-    const match = String(dateValue).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    const [year, month, day] = dateString.split("-");
 
-    if (match) {
-        const [, year, month, day] = match;
+    const date = new Date(
+        Number(year),
+        Number(month) - 1,
+        Number(day)
+    );
 
-        return new Date(
-            Number(year),
-            Number(month) - 1,
-            Number(day)
-        ).toLocaleDateString("en-US", {
-            month: "long",
-            day: "numeric",
-            year: "numeric"
-        });
-    }
+    return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+    });
+}
 
     return dateValue;
 }
