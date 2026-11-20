@@ -588,7 +588,7 @@ function dashboard() {
                 ${exams.map(exam => `
                     <p>
                         <b>${exam.subject}</b>
-                        — ${exam.date}
+                       — ${formatExamDate(exam.date)}
                     </p>
                 `).join("")}
 
