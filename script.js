@@ -1965,7 +1965,10 @@ else if (page === "Manage Students") {
         });
 
 }
+// ==========================================
 // MANAGE GRADES
+// ==========================================
+
 else if (page === "Manage Grades") {
 
     content.innerHTML = `
@@ -1974,16 +1977,23 @@ else if (page === "Manage Grades") {
 
             <h3>Add Student Grades</h3>
 
-            <label>Select Student</label>
+            <label>Select Section</label>
 
-            <select id="gradeStudent">
+            <select id="gradeSection">
+                <option value="">Select Section</option>
 
-                ${studentsList.map(s => `
-                    <option value="${escapeHTML(s.name)}">
-                        ${escapeHTML(s.name)}
+                ${getAvailableSections().map(section => `
+                    <option value="${escapeHTML(section)}">
+                        ${escapeHTML(section)}
                     </option>
                 `).join("")}
 
+            </select>
+
+            <label>Select Student</label>
+
+            <select id="gradeStudent" disabled>
+                <option value="">Select Section First</option>
             </select>
 
             <label>Subject</label>
@@ -1991,11 +2001,13 @@ else if (page === "Manage Grades") {
 
             <label>Midterm Grade</label>
             <input type="number" id="midtermGrade"
-                step="0.01" min="1" max="5">
+                step="0.01" min="1" max="5"
+                placeholder="Enter midterm grade">
 
             <label>Final Grade</label>
             <input type="number" id="finalGrade"
-                step="0.01" min="1" max="5">
+                step="0.01" min="1" max="5"
+                placeholder="Enter final grade">
 
             <button class="btn" id="saveGradeBtn">
                 Save Grade
@@ -2027,17 +2039,79 @@ else if (page === "Manage Grades") {
 
     `;
 
+    // ======================================
+    // SELECT STUDENTS BASED ON SECTION
+    // ======================================
+
+    document.getElementById("gradeSection")
+        .addEventListener("change", function() {
+
+            const selectedSection = this.value;
+            const studentDropdown =
+                document.getElementById("gradeStudent");
+
+            studentDropdown.innerHTML = "";
+
+            if (!selectedSection) {
+
+                studentDropdown.innerHTML =
+                    '<option value="">Select Section First</option>';
+
+                studentDropdown.disabled = true;
+                return;
+            }
+
+            const sectionStudents = studentsList.filter(
+                s => s.section === selectedSection
+            );
+
+            if (sectionStudents.length === 0) {
+
+                studentDropdown.innerHTML =
+                    '<option value="">No Students in This Section</option>';
+
+                studentDropdown.disabled = true;
+                return;
+            }
+
+            studentDropdown.innerHTML =
+                '<option value="">Select Student</option>';
+
+            sectionStudents.forEach(s => {
+
+                const option = document.createElement("option");
+
+                option.value = s.id;
+                option.textContent = s.name;
+
+                studentDropdown.appendChild(option);
+
+            });
+
+            studentDropdown.disabled = false;
+
+        });
+
+    // ======================================
     // DISPLAY GRADE RECORDS
+    // ======================================
+
     function displayGradeRecords(sectionFilter) {
 
         const filteredGrades = grades.filter(g => {
 
-            const studentRecord = studentsList.find(
-                s => s.name === g.student
+            const studentRecord = studentsList.find(s =>
+                g.studentId
+                    ? s.id === g.studentId
+                    : s.name === g.student
             );
 
-            return sectionFilter === "All Sections" ||
-                   studentRecord?.section === sectionFilter;
+            if (sectionFilter === "All Sections") {
+                return true;
+            }
+
+            return studentRecord?.section === sectionFilter ||
+                   g.section === sectionFilter;
 
         });
 
@@ -2045,27 +2119,54 @@ else if (page === "Manage Grades") {
 
             filteredGrades.length > 0
 
-            ? filteredGrades.map(g => `
-                <p>
-                    <b>${escapeHTML(g.student)}</b><br>
-                    Subject: ${escapeHTML(g.subject)}<br>
-                    Midterm: ${g.midterm}<br>
-                    Final: ${g.final}<br>
-                    Average: ${g.average}<br>
-                    Remarks: ${escapeHTML(g.remarks)}
-                </p>
-                <hr>
-            `).join("")
+            ? filteredGrades.map(g => {
 
-            : `<p class="empty-message">
-                No grade records for this section.
-               </p>`;
+                const studentRecord = studentsList.find(s =>
+                    g.studentId
+                        ? s.id === g.studentId
+                        : s.name === g.student
+                );
+
+                return `
+
+                    <div class="grade-record-item">
+
+                        <h4>${escapeHTML(g.student)}</h4>
+
+                        <p>
+                            <b>Section:</b>
+                            ${escapeHTML(studentRecord?.section || g.section || "Not specified")}
+                        </p>
+
+                        <p>
+                            <b>Subject:</b>
+                            ${escapeHTML(g.subject)}
+                        </p>
+
+                        <p><b>Midterm:</b> ${escapeHTML(g.midterm)}</p>
+                        <p><b>Final:</b> ${escapeHTML(g.final)}</p>
+                        <p><b>Average:</b> ${escapeHTML(g.average)}</p>
+                        <p><b>Remarks:</b> ${escapeHTML(g.remarks)}</p>
+
+                    </div>
+
+                    <hr>
+
+                `;
+
+            }).join("")
+
+            : `
+                <p class="empty-message">
+                    No grade records for this section.
+                </p>
+            `;
     }
 
-    // SHOW ALL GRADES
+    // SHOW ALL GRADES INITIALLY
     displayGradeRecords("All Sections");
 
-    // FILTER BY SECTION
+    // FILTER GRADE RECORDS
     document.getElementById("gradeSectionFilter")
         .addEventListener("change", function() {
 
@@ -2073,12 +2174,22 @@ else if (page === "Manage Grades") {
 
         });
 
+    // ======================================
     // SAVE STUDENT GRADE
+    // ======================================
+
     document.getElementById("saveGradeBtn")
         .addEventListener("click", function() {
 
-            const selectedStudent =
+            const selectedSection =
+                document.getElementById("gradeSection").value;
+
+            const selectedStudentID =
                 document.getElementById("gradeStudent").value;
+
+            const selectedStudent = studentsList.find(
+                s => s.id === selectedStudentID
+            );
 
             const subject =
                 document.getElementById("gradeSubject").value.trim();
@@ -2093,20 +2204,43 @@ else if (page === "Manage Grades") {
             const final = Number(finalValue);
 
             if (
+                !selectedSection ||
                 !selectedStudent ||
                 !subject ||
-                !midtermValue ||
-                !finalValue
+                midtermValue === "" ||
+                finalValue === ""
             ) {
                 alert("Please complete all grade information.");
                 return;
             }
 
+            // VERIFY THAT STUDENT BELONGS TO SELECTED SECTION
+            if (selectedStudent.section !== selectedSection) {
+                alert("The selected student does not belong to this section.");
+                return;
+            }
+
             if (
+                !Number.isFinite(midterm) ||
+                !Number.isFinite(final) ||
                 midterm < 1 || midterm > 5 ||
                 final < 1 || final > 5
             ) {
                 alert("Grades must be between 1.00 and 5.00.");
+                return;
+            }
+
+            // CHECK FOR DUPLICATE SUBJECT GRADE
+            const existingGrade = grades.some(g =>
+                (g.studentId
+                    ? g.studentId === selectedStudent.id
+                    : g.student === selectedStudent.name
+                ) &&
+                g.subject.toLowerCase() === subject.toLowerCase()
+            );
+
+            if (existingGrade) {
+                alert("A grade for this subject has already been recorded for this student.");
                 return;
             }
 
@@ -2117,14 +2251,19 @@ else if (page === "Manage Grades") {
                 : "Failed";
 
             grades.push({
-                student: selectedStudent,
+
+                studentId: selectedStudent.id,
+                student: selectedStudent.name,
+                section: selectedStudent.section,
                 subject: subject,
                 midterm: midterm.toFixed(2),
                 final: final.toFixed(2),
                 average: average,
                 remarks: remarks
+
             });
-          saveGrades();
+
+            saveGrades();
 
             alert("Student grade saved successfully!");
 
