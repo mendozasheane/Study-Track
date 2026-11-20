@@ -529,12 +529,27 @@ function showSectionStudents(section) {
 }
 
 
+// ==========================================
+// DASHBOARD WITH FILTERING
+// ==========================================
+
 function dashboard() {
 
-    // ==================================
+    // LOCAL DATE
+    const today = new Date();
+    const todayString =
+        today.getFullYear() + "-" +
+        String(today.getMonth() + 1).padStart(2, "0") + "-" +
+        String(today.getDate()).padStart(2, "0");
+
+    // ======================================
     // STUDENT DASHBOARD
-    // ==================================
+    // ======================================
+
     if (currentRole === "student") {
+
+        let taskFilter = "All";
+        let examFilter = "All";
 
         const currentStudent = studentsList.find(
             s => s.id === student.id
@@ -546,125 +561,118 @@ function dashboard() {
             task => task.section === studentSection
         );
 
-        const completedTasks = studentTasks.filter(task =>
-            (task.submissions || []).some(
-                sub => sub.studentId === student.id
-            )
-        );
+        function renderStudentDashboard() {
 
-        const pendingTasks = studentTasks.length - completedTasks.length;
+            const pendingTasks = studentTasks.filter(task =>
+                !(task.submissions || []).some(
+                    sub => sub.studentId === student.id
+                )
+            );
 
-        const studentExams = exams.filter(exam =>
-            exam.section === "All Sections" ||
-            exam.section === studentSection
-        );
+            const completedTasks = studentTasks.filter(task =>
+                (task.submissions || []).some(
+                    sub => sub.studentId === student.id
+                )
+            );
 
-        content.innerHTML = `
+            let displayedTasks = studentTasks;
 
-            <div class="dashboard-welcome">
-                <div>
-                    <span class="dashboard-label">STUDENT PORTAL</span>
+            if (taskFilter === "Pending") {
+                displayedTasks = pendingTasks;
+            } else if (taskFilter === "Completed") {
+                displayedTasks = completedTasks;
+            }
+
+            let displayedExams = exams;
+
+            if (examFilter === "Upcoming") {
+                displayedExams = exams.filter(
+                    exam => exam.date >= todayString
+                );
+            }
+
+            content.innerHTML = `
+
+                <div class="welcome">
                     <h2>Welcome back, ${escapeHTML(student.name)}!</h2>
                     <p>
                         Manage your academic tasks, monitor your grades,
                         and stay updated with your study schedule.
                     </p>
                 </div>
-                <div class="welcome-icon">🎓</div>
-            </div>
 
-            <div class="dashboard-stats">
+                <div class="grid">
 
-                <div class="dashboard-stat average-stat">
-                    <div class="stat-icon">📊</div>
-                    <div>
+                    <div class="stat">
                         <small>Overall Average</small>
                         <strong>1.75</strong>
-                        <span>Current Average</span>
                     </div>
-                </div>
 
-                <div class="dashboard-stat">
-                    <div class="stat-icon">📚</div>
-                    <div>
+                    <div class="stat">
                         <small>Total Tasks</small>
                         <strong>${studentTasks.length}</strong>
-                        <span>Assigned Activities</span>
                     </div>
-                </div>
 
-                <div class="dashboard-stat">
-                    <div class="stat-icon">⏳</div>
-                    <div>
+                    <div class="stat">
                         <small>Pending Tasks</small>
-                        <strong>${pendingTasks}</strong>
-                        <span>Need to be submitted</span>
+                        <strong>${pendingTasks.length}</strong>
                     </div>
-                </div>
 
-                <div class="dashboard-stat">
-                    <div class="stat-icon">📖</div>
-                    <div>
+                    <div class="stat">
                         <small>Total Subjects</small>
                         <strong>${totalSubjects}</strong>
-                        <span>Current Subjects</span>
                     </div>
+
                 </div>
 
-            </div>
+                <div class="card">
 
-            <div class="dashboard-panel">
-                <div class="dashboard-panel-heading">
-                    <div>
-                        <h3>Manage Total Subjects</h3>
-                        <p>Update your current number of subjects.</p>
-                    </div>
-                    <span class="panel-icon">📘</span>
-                </div>
+                    <h3>Manage Total Subjects</h3>
+                    <p>Update your current number of subjects.</p>
 
-                <div class="subject-setting">
-                    <div>
-                        <label for="subjectCount">Number of Subjects</label>
-                        <input
-                            type="number"
-                            id="subjectCount"
-                            min="1"
-                            value="${totalSubjects}"
-                        >
-                    </div>
+                    <label>Number of Subjects</label>
+
+                    <input
+                        type="number"
+                        id="subjectCount"
+                        min="1"
+                        value="${totalSubjects}"
+                    >
 
                     <button class="btn" id="saveSubjectCount">
                         Save Changes
                     </button>
+
                 </div>
-            </div>
 
-            <div class="dashboard-columns">
+                <div class="card">
 
-                <div class="dashboard-panel">
-                    <div class="dashboard-panel-heading">
-                        <div>
-                            <h3>Recent Tasks</h3>
-                            <p>Your assigned activities</p>
-                        </div>
-                        <span class="panel-icon">📝</span>
-                    </div>
+                    <h3>Recent Tasks</h3>
+                    <p>Your assigned activities</p>
 
-                    <div class="dashboard-list">
+                    <label>Filter by Status</label>
+
+                    <select id="studentTaskFilter">
+                        <option value="All">All Tasks</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+
+                    <div class="dashboard-records">
+
                         ${
-                            studentTasks.length > 0
-                            ? studentTasks.slice(-5).reverse().map(task => {
+                            displayedTasks.length > 0
+                            ? displayedTasks.map(task => {
 
                                 const submitted = (task.submissions || []).some(
                                     sub => sub.studentId === student.id
                                 );
 
                                 return `
-                                    <div class="dashboard-list-item">
-                                        <div>
-                                            <strong>${escapeHTML(task.title)}</strong>
-                                            <small>${escapeHTML(task.subject)}</small>
-                                        </div>
+                                    <div class="dashboard-item">
+                                        <b>${escapeHTML(task.title)}</b>
+                                        <p>Subject: ${escapeHTML(task.subject)}</p>
+                                        <p>Due Date: ${escapeHTML(task.dueDate)}</p>
 
                                         <span class="${submitted ? "task-completed" : "task-pending"}">
                                             ${submitted ? "Completed" : "Pending"}
@@ -673,60 +681,274 @@ function dashboard() {
                                 `;
 
                             }).join("")
-                            : `<p class="empty-message">No tasks assigned yet.</p>`
+                            : `<p class="empty-message">No tasks found.</p>`
                         }
+
                     </div>
+
                 </div>
 
-                <div class="dashboard-panel">
-                    <div class="dashboard-panel-heading">
-                        <div>
-                            <h3>Upcoming Exams</h3>
-                            <p>Your scheduled examinations</p>
-                        </div>
-                        <span class="panel-icon">📅</span>
-                    </div>
+                <div class="card">
 
-                    <div class="dashboard-list">
+                    <h3>Upcoming Exams</h3>
+                    <p>Your scheduled examinations</p>
+
+                    <label>Filter Exams</label>
+
+                    <select id="studentExamFilter">
+                        <option value="All">All Exams</option>
+                        <option value="Upcoming">Upcoming Exams</option>
+                    </select>
+
+                    <div class="dashboard-records">
+
                         ${
-                            studentExams.length > 0
-                            ? studentExams.slice(0, 5).map(exam => `
-                                <div class="dashboard-list-item">
-                                    <div>
-                                        <strong>${escapeHTML(exam.subject)}</strong>
-                                        <small>${formatExamDate(exam.date)}</small>
-                                    </div>
-                                    <span class="exam-date-badge">Exam</span>
+                            displayedExams.length > 0
+                            ? displayedExams.map(exam => `
+                                <div class="dashboard-item">
+                                    <b>${escapeHTML(exam.subject)}</b>
+                                    <p>Date: ${formatExamDate(exam.date)}</p>
+                                    <p>Time: ${escapeHTML(exam.time || "Not specified")}</p>
                                 </div>
                             `).join("")
-                            : `<p class="empty-message">No upcoming exams yet.</p>`
+                            : `<p class="empty-message">No exams found.</p>`
                         }
+
                     </div>
+
                 </div>
 
-            </div>
-        `;
+            `;
 
-        document.getElementById("saveSubjectCount")
-            .addEventListener("click", function() {
+            // KEEP SELECTED FILTER VALUES
+            document.getElementById("studentTaskFilter").value = taskFilter;
+            document.getElementById("studentExamFilter").value = examFilter;
 
-                const newTotal = Number(
-                    document.getElementById("subjectCount").value
-                );
+            // TASK FILTER
+            document.getElementById("studentTaskFilter")
+                .addEventListener("change", function() {
+                    taskFilter = this.value;
+                    renderStudentDashboard();
+                });
 
-                if (!Number.isInteger(newTotal) || newTotal < 1) {
-                    alert("Please enter a valid number.");
-                    return;
-                }
+            // EXAM FILTER
+            document.getElementById("studentExamFilter")
+                .addEventListener("change", function() {
+                    examFilter = this.value;
+                    renderStudentDashboard();
+                });
 
-                totalSubjects = newTotal;
+            // SAVE TOTAL SUBJECTS
+            document.getElementById("saveSubjectCount")
+                .addEventListener("click", function() {
 
-                alert("Total subjects updated!");
+                    const newTotal = Number(
+                        document.getElementById("subjectCount").value
+                    );
 
-                dashboard();
-            });
+                    if (!Number.isInteger(newTotal) || newTotal < 1) {
+                        alert("Please enter a valid number.");
+                        return;
+                    }
+
+                    totalSubjects = newTotal;
+
+                    alert("Total subjects updated!");
+
+                    renderStudentDashboard();
+                });
+
+        }
+
+        renderStudentDashboard();
 
     }
+
+    // ======================================
+    // TEACHER DASHBOARD
+    // ======================================
+
+    else {
+
+        let sectionFilter = "All Sections";
+        let createdTaskFilter = "All";
+
+        function renderTeacherDashboard() {
+
+            const filteredStudents = sectionFilter === "All Sections"
+                ? studentsList
+                : studentsList.filter(
+                    s => s.section === sectionFilter
+                );
+
+            const studentNames = filteredStudents.map(s => s.name);
+
+            const filteredGrades = grades.filter(
+                g => studentNames.includes(g.student)
+            );
+
+            const filteredTasks = sectionFilter === "All Sections"
+                ? tasks
+                : tasks.filter(
+                    task => task.section === sectionFilter
+                );
+
+            const totalSubmissions = filteredTasks.reduce(
+                (total, task) =>
+                    total + (task.submissions?.length || 0),
+                0
+            );
+
+            let displayedTasks = filteredTasks;
+
+            if (createdTaskFilter === "With Submissions") {
+                displayedTasks = filteredTasks.filter(
+                    task => (task.submissions || []).length > 0
+                );
+            } else if (createdTaskFilter === "No Submissions") {
+                displayedTasks = filteredTasks.filter(
+                    task => (task.submissions || []).length === 0
+                );
+            }
+
+            content.innerHTML = `
+
+                <div class="welcome">
+                    <h2>Welcome, Teacher!</h2>
+                    <p>
+                        Manage student records, monitor academic grades,
+                        assign activities, and share important announcements.
+                    </p>
+                </div>
+
+                <div class="card dashboard-filter-card">
+
+                    <label>Filter Dashboard by Section</label>
+
+                    <select id="teacherSectionFilter">
+
+                        <option value="All Sections">All Sections</option>
+
+                        ${getAvailableSections().map(section => `
+                            <option value="${escapeHTML(section)}">
+                                ${escapeHTML(section)}
+                            </option>
+                        `).join("")}
+
+                    </select>
+
+                </div>
+
+                <div class="grid">
+
+                    <div class="stat">
+                        <small>Total Students</small>
+                        <strong>${filteredStudents.length}</strong>
+                    </div>
+
+                    <div class="stat">
+                        <small>Grade Records</small>
+                        <strong>${filteredGrades.length}</strong>
+                    </div>
+
+                    <div class="stat">
+                        <small>Created Tasks</small>
+                        <strong>${filteredTasks.length}</strong>
+                    </div>
+
+                    <div class="stat">
+                        <small>Submissions</small>
+                        <strong>${totalSubmissions}</strong>
+                    </div>
+
+                </div>
+
+                <div class="card">
+
+                    <h3>Recent Announcements</h3>
+                    <p>Latest class updates</p>
+
+                    ${
+                        announcements.length > 0
+                        ? announcements.slice(-3).reverse().map(a => `
+                            <div class="dashboard-item">
+                                ${escapeHTML(a)}
+                            </div>
+                        `).join("")
+                        : `<p class="empty-message">No announcements yet.</p>`
+                    }
+
+                </div>
+
+                <div class="card">
+
+                    <h3>Recent Created Tasks</h3>
+                    <p>Activities assigned to students</p>
+
+                    <label>Filter Tasks</label>
+
+                    <select id="teacherTaskFilter">
+                        <option value="All">All Tasks</option>
+                        <option value="With Submissions">With Submissions</option>
+                        <option value="No Submissions">No Submissions</option>
+                    </select>
+
+                    <div class="dashboard-records">
+
+                        ${
+                            displayedTasks.length > 0
+                            ? displayedTasks.slice().reverse().map(task => `
+                                <div class="dashboard-item">
+
+                                    <b>${escapeHTML(task.title)}</b>
+
+                                    <p>Subject: ${escapeHTML(task.subject)}</p>
+                                    <p>Section: ${escapeHTML(task.section)}</p>
+
+                                    <p>
+                                        ${task.submissions?.length || 0}
+                                        Student Submission(s)
+                                    </p>
+
+                                </div>
+                            `).join("")
+                            : `<p class="empty-message">No tasks found.</p>`
+                        }
+
+                    </div>
+
+                </div>
+
+            `;
+
+            // KEEP SELECTED FILTER VALUES
+            document.getElementById("teacherSectionFilter").value =
+                sectionFilter;
+
+            document.getElementById("teacherTaskFilter").value =
+                createdTaskFilter;
+
+            // SECTION FILTER
+            document.getElementById("teacherSectionFilter")
+                .addEventListener("change", function() {
+                    sectionFilter = this.value;
+                    renderTeacherDashboard();
+                });
+
+            // CREATED TASK FILTER
+            document.getElementById("teacherTaskFilter")
+                .addEventListener("change", function() {
+                    createdTaskFilter = this.value;
+                    renderTeacherDashboard();
+                });
+
+        }
+
+        renderTeacherDashboard();
+
+    }
+
+}
 
     // ==================================
     // TEACHER DASHBOARD
