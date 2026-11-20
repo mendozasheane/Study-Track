@@ -178,6 +178,17 @@ function formatExamDate(dateString) {
         year: "numeric"
     });
 }
+function formatExamTime(timeString) {
+    if (!timeString) return "Not specified";
+
+    const [hours, minutes] = timeString.split(":");
+    const hour = Number(hours);
+
+    const period = hour >= 12 ? "PM" : "AM";
+    const formattedHour = hour % 12 || 12;
+
+    return `${formattedHour}:${minutes} ${period}`;
+}
 
  // ==========================================
  // STUDENT ACCOUNTS
