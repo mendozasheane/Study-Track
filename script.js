@@ -1042,7 +1042,7 @@ else if (page === "My Profile") {
                 ${exams.map(exam => `
                     <p>
                         <b>${exam.subject}</b><br>
-                        Date: ${exam.date}<br>
+                        Date: ${formatExamDate(exam.date)}<br>
                         Time: ${exam.time || "Not specified"}<br>
                         Room: ${exam.room || "Not specified"}
                     </p>
