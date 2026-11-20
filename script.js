@@ -896,28 +896,78 @@ else if (page === "My Profile") {
 
     }
 
-    // TEACHER MY PROFILE
     else {
 
-        content.innerHTML = `
-            <div class="card">
-                <h3>My Profile</h3>
+    let teacherProfile = JSON.parse(
+        localStorage.getItem("studyTrackTeacherProfile")
+    ) || {
+        id: "T-2026-001",
+        name: "Juan Dela Cruz",
+        department: "College of Computer Studies",
+        email: "teacher@example.com"
+    };
 
-                <label>Teacher ID</label>
-                <input value="T-2026-001" disabled>
+    content.innerHTML = `
+        <div class="card">
+            <h3>My Profile</h3>
 
-                <label>Complete Name</label>
-                <input value="Juan Dela Cruz" disabled>
+            <label>Teacher ID</label>
+            <input value="${teacherProfile.id}" disabled>
 
-                <label>Department</label>
-                <input value="College of Computer Studies" disabled>
+            <label>Complete Name</label>
+            <input id="teacherName"
+                value="${escapeHTML(teacherProfile.name)}" disabled>
 
-                <label>Email Address</label>
-                <input value="teacher@example.com" disabled>
-            </div>
-        `;
+            <label>Department</label>
+            <input id="teacherDepartment"
+                value="${escapeHTML(teacherProfile.department)}" disabled>
 
-    }
+            <label>Email Address</label>
+            <input type="email" id="teacherEmail"
+                value="${escapeHTML(teacherProfile.email)}" disabled>
+
+            <button class="btn" id="editTeacherBtn">
+                Edit Profile
+            </button>
+
+            <button class="btn" id="saveTeacherBtn" style="display:none;">
+                Save Changes
+            </button>
+        </div>
+    `;
+
+    document.getElementById("editTeacherBtn")
+        .addEventListener("click", function() {
+
+            document.getElementById("teacherName").disabled = false;
+            document.getElementById("teacherDepartment").disabled = false;
+            document.getElementById("teacherEmail").disabled = false;
+
+            this.style.display = "none";
+            document.getElementById("saveTeacherBtn").style.display = "inline-block";
+        });
+
+    document.getElementById("saveTeacherBtn")
+        .addEventListener("click", function() {
+
+            teacherProfile.name = document.getElementById("teacherName").value.trim();
+            teacherProfile.department = document.getElementById("teacherDepartment").value.trim();
+            teacherProfile.email = document.getElementById("teacherEmail").value.trim();
+
+            if (!teacherProfile.name || !teacherProfile.department || !teacherProfile.email) {
+                alert("Please complete all fields.");
+                return;
+            }
+
+            localStorage.setItem(
+                "studyTrackTeacherProfile",
+                JSON.stringify(teacherProfile)
+            );
+
+            alert("Teacher profile updated successfully!");
+
+            showPage("My Profile");
+        });
 
 }
     // MY GRADES
