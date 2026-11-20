@@ -964,15 +964,17 @@ else if (page === "My Profile") {
                 JSON.stringify(teacherProfile)
             );
 
-            alert("Teacher profile updated successfully!");
+                        alert("Teacher profile updated successfully!");
 
             showPage("My Profile");
-         });
-    }
-}
+        });
 
-    // MY GRADES
-    else if (page === "My Grades") {
+    }
+
+} 
+
+// MY GRADES
+else if (page === "My Grades") {
 
         const visibleGrades = grades.filter(
             g => g.student === student.name
