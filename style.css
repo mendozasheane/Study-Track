@@ -1370,5 +1370,54 @@ textarea {
     }
 }
 
+/* MANAGE STUDENTS FORM */
+
+.student-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 22px;
+    margin: 20px 0;
+}
+
+.student-form-grid .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.student-form-grid .full-width {
+    grid-column: 1 / -1;
+}
+
+.student-form-grid input,
+.student-form-grid select {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.grade-record-item {
+    padding: 15px 0;
+}
+
+.grade-record-item h4 {
+    margin-bottom: 10px;
+    color: #17335d;
+}
+
+.grade-record-item p {
+    margin: 6px 0;
+}
+
+@media (max-width: 600px) {
+    .student-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .student-form-grid .full-width {
+        grid-column: auto;
+    }
+}
+
 
 
