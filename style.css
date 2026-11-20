@@ -1418,6 +1418,26 @@ textarea {
         grid-column: auto;
     }
 }
+/* FIX WELCOME DASHBOARD TEXT */
+.welcome {
+    background: #eaf3ff;
+    color: #17335d;
+    padding: 25px;
+    border-radius: 12px;
+}
 
+.welcome h2 {
+    color: #17335d !important;
+    font-size: 24px;
+    margin-bottom: 10px;
+    opacity: 1;
+}
+
+.welcome p {
+    color: #58708d !important;
+    font-size: 15px;
+    opacity: 1;
+    line-height: 1.6;
+}
 
 
