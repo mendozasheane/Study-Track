@@ -45,6 +45,7 @@ const teacherMenu = [
     "My Profile",
     "Manage Students",
     "Manage Grades",
+    "Manage Tasks",
     "Exam Schedule",
     "Announcements"
 ];
