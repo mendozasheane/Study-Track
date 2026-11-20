@@ -528,94 +528,183 @@ function showSectionStudents(section) {
 
 }
 
-// ==========================================
-// DASHBOARD
-// ==========================================
 
 function dashboard() {
 
+    // ==================================
+    // STUDENT DASHBOARD
+    // ==================================
     if (currentRole === "student") {
+
+        const currentStudent = studentsList.find(
+            s => s.id === student.id
+        );
+
+        const studentSection = currentStudent?.section || "";
+
+        const studentTasks = tasks.filter(
+            task => task.section === studentSection
+        );
+
+        const completedTasks = studentTasks.filter(task =>
+            (task.submissions || []).some(
+                sub => sub.studentId === student.id
+            )
+        );
+
+        const pendingTasks = studentTasks.length - completedTasks.length;
+
+        const studentExams = exams.filter(exam =>
+            exam.section === "All Sections" ||
+            exam.section === studentSection
+        );
 
         content.innerHTML = `
 
-            <div class="welcome">
-                <h2>Welcome back, ${student.name}!</h2>
-                <p>
-                    Welcome to your academic dashboard.
-                    Manage your tasks, grades, and study schedule
-                    in one place.
-                </p>
-            </div>
-
-            <div class="grid">
-
-                <div class="stat">
-                    <small>Overall Average</small>
-                    <strong>1.75</strong>
-                </div>
-
-                <div class="stat">
-                    <small>Total Tasks</small>
-                    <strong>${tasks.length}</strong>
-                </div>
-
-                <div class="stat">
-                    <small>Pending Tasks</small>
-                    <strong>
-                        ${tasks.filter(t => t.status === "Pending").length}
-                    </strong>
-                </div>
-
-                <div class="stat">
-                    <small>Total Subjects</small>
-                    <strong>${totalSubjects}</strong>
-                </div>
-
-            </div>
-
-            <div class="card">
-                <h3>Manage Total Subjects</h3>
-
-                <p>Update the number of your current subjects.</p>
-
-                <label>Number of Subjects</label>
-
-                <input
-                    type="number"
-                    id="subjectCount"
-                    min="1"
-                    value="${totalSubjects}"
-                >
-
-                <button class="btn" id="saveSubjectCount">
-                    Save Changes
-                </button>
-            </div>
-
-            <div class="card">
-                <h3>Recent Tasks</h3>
-
-                ${tasks.map(task => `
+            <div class="dashboard-welcome">
+                <div>
+                    <span class="dashboard-label">STUDENT PORTAL</span>
+                    <h2>Welcome back, ${escapeHTML(student.name)}!</h2>
                     <p>
-                        ${task.title} —
-                        <span class="badge">${task.status}</span>
+                        Manage your academic tasks, monitor your grades,
+                        and stay updated with your study schedule.
                     </p>
-                `).join("")}
+                </div>
+                <div class="welcome-icon">🎓</div>
+            </div>
+
+            <div class="dashboard-stats">
+
+                <div class="dashboard-stat average-stat">
+                    <div class="stat-icon">📊</div>
+                    <div>
+                        <small>Overall Average</small>
+                        <strong>1.75</strong>
+                        <span>Current Average</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-stat">
+                    <div class="stat-icon">📚</div>
+                    <div>
+                        <small>Total Tasks</small>
+                        <strong>${studentTasks.length}</strong>
+                        <span>Assigned Activities</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-stat">
+                    <div class="stat-icon">⏳</div>
+                    <div>
+                        <small>Pending Tasks</small>
+                        <strong>${pendingTasks}</strong>
+                        <span>Need to be submitted</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-stat">
+                    <div class="stat-icon">📖</div>
+                    <div>
+                        <small>Total Subjects</small>
+                        <strong>${totalSubjects}</strong>
+                        <span>Current Subjects</span>
+                    </div>
+                </div>
 
             </div>
 
-            <div class="card">
-                <h3>Upcoming Exams</h3>
+            <div class="dashboard-panel">
+                <div class="dashboard-panel-heading">
+                    <div>
+                        <h3>Manage Total Subjects</h3>
+                        <p>Update your current number of subjects.</p>
+                    </div>
+                    <span class="panel-icon">📘</span>
+                </div>
 
-                ${exams.map(exam => `
-                    <p>
-                        <b>${exam.subject}</b>
-                       — ${formatExamDate(exam.date)}
-                    </p>
-                `).join("")}
+                <div class="subject-setting">
+                    <div>
+                        <label for="subjectCount">Number of Subjects</label>
+                        <input
+                            type="number"
+                            id="subjectCount"
+                            min="1"
+                            value="${totalSubjects}"
+                        >
+                    </div>
 
+                    <button class="btn" id="saveSubjectCount">
+                        Save Changes
+                    </button>
+                </div>
             </div>
 
+            <div class="dashboard-columns">
+
+                <div class="dashboard-panel">
+                    <div class="dashboard-panel-heading">
+                        <div>
+                            <h3>Recent Tasks</h3>
+                            <p>Your assigned activities</p>
+                        </div>
+                        <span class="panel-icon">📝</span>
+                    </div>
+
+                    <div class="dashboard-list">
+                        ${
+                            studentTasks.length > 0
+                            ? studentTasks.slice(-5).reverse().map(task => {
+
+                                const submitted = (task.submissions || []).some(
+                                    sub => sub.studentId === student.id
+                                );
+
+                                return `
+                                    <div class="dashboard-list-item">
+                                        <div>
+                                            <strong>${escapeHTML(task.title)}</strong>
+                                            <small>${escapeHTML(task.subject)}</small>
+                                        </div>
+
+                                        <span class="${submitted ? "task-completed" : "task-pending"}">
+                                            ${submitted ? "Completed" : "Pending"}
+                                        </span>
+                                    </div>
+                                `;
+
+                            }).join("")
+                            : `<p class="empty-message">No tasks assigned yet.</p>`
+                        }
+                    </div>
+                </div>
+
+                <div class="dashboard-panel">
+                    <div class="dashboard-panel-heading">
+                        <div>
+                            <h3>Upcoming Exams</h3>
+                            <p>Your scheduled examinations</p>
+                        </div>
+                        <span class="panel-icon">📅</span>
+                    </div>
+
+                    <div class="dashboard-list">
+                        ${
+                            studentExams.length > 0
+                            ? studentExams.slice(0, 5).map(exam => `
+                                <div class="dashboard-list-item">
+                                    <div>
+                                        <strong>${escapeHTML(exam.subject)}</strong>
+                                        <small>${formatExamDate(exam.date)}</small>
+                                    </div>
+                                    <span class="exam-date-badge">Exam</span>
+                                </div>
+                            `).join("")
+                            : `<p class="empty-message">No upcoming exams yet.</p>`
+                        }
+                    </div>
+                </div>
+
+            </div>
         `;
 
         document.getElementById("saveSubjectCount")
@@ -639,56 +728,126 @@ function dashboard() {
 
     }
 
+    // ==================================
+    // TEACHER DASHBOARD
+    // ==================================
     else {
 
         const totalStudents = studentsList.length;
 
+        const totalSubmissions = tasks.reduce(
+            (total, task) => total + (task.submissions?.length || 0),
+            0
+        );
+
         content.innerHTML = `
 
-            <div class="welcome">
+            <div class="dashboard-welcome teacher-welcome">
+                <div>
+                    <span class="dashboard-label">TEACHER PORTAL</span>
+                    <h2>Welcome, Teacher!</h2>
+                    <p>
+                        Manage student records, monitor academic grades,
+                        assign activities, and share important announcements.
+                    </p>
+                </div>
+                <div class="welcome-icon">👨‍🏫</div>
+            </div>
 
-                <h2>Welcome, Teacher!</h2>
+            <div class="dashboard-stats">
 
-                <p>
-                    Manage student information,
-                    academic grades, tasks, and announcements.
-                </p>
+                <div class="dashboard-stat">
+                    <div class="stat-icon">👨‍🎓</div>
+                    <div>
+                        <small>Total Students</small>
+                        <strong>${totalStudents}</strong>
+                        <span>Registered Students</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-stat">
+                    <div class="stat-icon">📊</div>
+                    <div>
+                        <small>Grade Records</small>
+                        <strong>${grades.length}</strong>
+                        <span>Recorded Grades</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-stat">
+                    <div class="stat-icon">📝</div>
+                    <div>
+                        <small>Created Tasks</small>
+                        <strong>${tasks.length}</strong>
+                        <span>Assigned Activities</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-stat">
+                    <div class="stat-icon">📤</div>
+                    <div>
+                        <small>Submissions</small>
+                        <strong>${totalSubmissions}</strong>
+                        <span>Student Submissions</span>
+                    </div>
+                </div>
 
             </div>
 
-            <div class="grid">
+            <div class="dashboard-columns">
 
-                <div class="stat">
-                    <small>Total Students</small>
-                    <strong>${totalStudents}</strong>
+                <div class="dashboard-panel">
+                    <div class="dashboard-panel-heading">
+                        <div>
+                            <h3>Recent Announcements</h3>
+                            <p>Latest class updates</p>
+                        </div>
+                        <span class="panel-icon">📢</span>
+                    </div>
+
+                    <div class="dashboard-list">
+                        ${
+                            announcements.length > 0
+                            ? announcements.slice(-5).reverse().map(a => `
+                                <div class="dashboard-list-item announcement-item">
+                                    <strong>${escapeHTML(a)}</strong>
+                                </div>
+                            `).join("")
+                            : `<p class="empty-message">No announcements yet.</p>`
+                        }
+                    </div>
                 </div>
 
-                <div class="stat">
-                    <small>Grade Records</small>
-                    <strong>${grades.length}</strong>
+                <div class="dashboard-panel">
+                    <div class="dashboard-panel-heading">
+                        <div>
+                            <h3>Recent Created Tasks</h3>
+                            <p>Activities assigned to students</p>
+                        </div>
+                        <span class="panel-icon">📋</span>
+                    </div>
+
+                    <div class="dashboard-list">
+                        ${
+                            tasks.length > 0
+                            ? tasks.slice(-5).reverse().map(task => `
+                                <div class="dashboard-list-item">
+                                    <div>
+                                        <strong>${escapeHTML(task.title)}</strong>
+                                        <small>
+                                            ${escapeHTML(task.subject)} ·
+                                            ${escapeHTML(task.section)}
+                                        </small>
+                                    </div>
+                                    <span class="exam-date-badge">
+                                        ${task.submissions?.length || 0} Submitted
+                                    </span>
+                                </div>
+                            `).join("")
+                            : `<p class="empty-message">No tasks created yet.</p>`
+                        }
+                    </div>
                 </div>
-
-                <div class="stat">
-                    <small>Pending Tasks</small>
-                    <strong>
-                        ${tasks.filter(t => t.status === "Pending").length}
-                    </strong>
-                </div>
-
-                <div class="stat">
-                    <small>Announcements</small>
-                    <strong>${announcements.length}</strong>
-                </div>
-
-            </div>
-
-            <div class="card">
-                <h3>Recent Announcements</h3>
-
-                ${announcements.length > 0
-                    ? announcements.map(a => `<p>${a}</p>`).join("")
-                    : `<p class="empty-message">No announcements yet.</p>`
-                }
 
             </div>
 
@@ -697,6 +856,7 @@ function dashboard() {
     }
 
 }
+
 
 
 
