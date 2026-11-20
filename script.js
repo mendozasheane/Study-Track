@@ -2251,6 +2251,7 @@ else if (page === "Manage Grades") {
                 average: average,
                 remarks: remarks
             });
+          saveGrades();
 
             alert("Student grade saved successfully!");
 
