@@ -1629,8 +1629,13 @@ loginForm.addEventListener("submit", function(e) {
 
     portal.textContent = currentRole.toUpperCase() + " PORTAL";
 
-    showPage("Dashboard");
+// APPLY TEACHER DESIGN
+appLayout.classList.toggle(
+    "teacher-mode",
+    currentRole === "teacher"
+);
 
+showPage("Dashboard");
 });
 
 
