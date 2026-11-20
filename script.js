@@ -1831,41 +1831,54 @@ else if (page === "Manage Students") {
 
             <h3>Add New Student</h3>
 
-            <label>Student ID</label>
-            <input id="newStudentID" placeholder="Enter Student ID">
+            <div class="student-form-grid">
 
-            <label>Complete Name</label>
-            <input id="newStudentName" placeholder="Enter complete name">
+                <div class="form-group">
+                    <label>Student ID</label>
+                    <input id="newStudentID"
+                        placeholder="Enter Student ID">
+                </div>
 
-            <label>Course</label>
-            <select id="newStudentCourse">
-                <option value="">Select Course</option>
-                <option value="BSIT">BSIT</option>
-                <option value="BSIS">BSIS</option>
-            </select>
+                <div class="form-group">
+                    <label>Complete Name</label>
+                    <input id="newStudentName"
+                        placeholder="Enter complete name">
+                </div>
 
-            <label>Section</label>
-            <select id="newStudentSection">
-                <option value="">Select Section</option>
-                ${getAvailableSections().map(section => `
-                    <option value="${escapeHTML(section)}">
-                        ${escapeHTML(section)}
-                    </option>
-                `).join("")}
-            </select>
+                <div class="form-group">
+                    <label>Course</label>
+                    <select id="newStudentCourse">
+                        <option value="">Select Course</option>
+                        <option value="BSIT">BSIT</option>
+                        <option value="BSIS">BSIS</option>
+                    </select>
+                </div>
 
-            <label>Year Level</label>
-            <select id="newStudentYear">
-                <option value="">Select Year Level</option>
-                <option value="First Year">First Year</option>
-                <option value="Second Year">Second Year</option>
-                <option value="Third Year">Third Year</option>
-                <option value="Fourth Year">Fourth Year</option>
-            </select>
+                <div class="form-group">
+                    <label>Section</label>
+                    <select id="newStudentSection" disabled>
+                        <option value="">Select Course First</option>
+                    </select>
+                </div>
 
-            <label>Email Address</label>
-            <input type="email" id="newStudentEmail"
-                placeholder="Enter email address">
+                <div class="form-group">
+                    <label>Year Level</label>
+                    <select id="newStudentYear">
+                        <option value="">Select Year Level</option>
+                        <option value="First Year">First Year</option>
+                        <option value="Second Year">Second Year</option>
+                        <option value="Third Year">Third Year</option>
+                        <option value="Fourth Year">Fourth Year</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Email Address</label>
+                    <input type="email" id="newStudentEmail"
+                        placeholder="Enter email address">
+                </div>
+
+            </div>
 
             <button class="btn" id="addStudentBtn">
                 Add Student
@@ -1873,48 +1886,41 @@ else if (page === "Manage Students") {
 
         </div>
 
-        <div class="card">
-
-            <h3>Student Records</h3>
-
-            <div class="table-container">
-
-                <table>
-
-                    <thead>
-                        <tr>
-                            <th>Student ID</th>
-                            <th>Complete Name</th>
-                            <th>Course</th>
-                            <th>Section</th>
-                            <th>Year Level</th>
-                            <th>Email</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        ${studentsList.map(s => `
-                            <tr>
-                                <td>${escapeHTML(s.id)}</td>
-                                <td>${escapeHTML(s.name)}</td>
-                                <td>${escapeHTML(s.course)}</td>
-                                <td>${escapeHTML(s.section)}</td>
-                                <td>${escapeHTML(s.year)}</td>
-                                <td>${escapeHTML(s.email)}</td>
-                            </tr>
-                        `).join("")}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
     `;
 
+    // FILTER SECTION BASED ON COURSE
+    document.getElementById("newStudentCourse")
+        .addEventListener("change", function() {
+
+            const selectedCourse = this.value;
+            const sectionDropdown =
+                document.getElementById("newStudentSection");
+
+            sectionDropdown.innerHTML =
+                '<option value="">Select Section</option>';
+
+            if (!selectedCourse) {
+                sectionDropdown.disabled = true;
+                return;
+            }
+
+            const matchingSections = getAvailableSections().filter(
+                section => section.startsWith(selectedCourse)
+            );
+
+            matchingSections.forEach(section => {
+
+                const option = document.createElement("option");
+                option.value = section;
+                option.textContent = section;
+
+                sectionDropdown.appendChild(option);
+
+            });
+
+            sectionDropdown.disabled = false;
+
+        });
 
     // ADD STUDENT
     document.getElementById("addStudentBtn")
@@ -1933,7 +1939,7 @@ else if (page === "Manage Students") {
             }
 
             const existingStudent = studentsList.some(
-                s => s.id === id
+                s => s.id.toLowerCase() === id.toLowerCase()
             );
 
             if (existingStudent) {
@@ -1959,7 +1965,6 @@ else if (page === "Manage Students") {
         });
 
 }
-
 // MANAGE GRADES
 else if (page === "Manage Grades") {
 
