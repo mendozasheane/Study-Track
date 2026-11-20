@@ -856,3 +856,54 @@ textarea {
 .delete-exam-btn:hover {
     background: #b02a37;
 }
+/* MY TASK */
+
+.task-card {
+    background: #ffffff;
+    border: 1px solid #dce3ed;
+    border-left: 5px solid #2868b8;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 18px;
+}
+
+.task-card h3 {
+    color: #17335d;
+    margin-bottom: 12px;
+}
+
+.task-card p {
+    margin: 10px 0;
+}
+
+.task-pending {
+    display: inline-block;
+    background: #fff3cd;
+    color: #856404;
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin: 10px 0;
+}
+
+.task-completed {
+    display: inline-block;
+    background: #d1e7dd;
+    color: #0f5132;
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin: 10px 0;
+}
+
+.submission-box {
+    background: #f4f7fb;
+    border: 1px solid #dce3ed;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 12px;
+}
+
+.task-card input,
+.task-card textarea,
+.task-card select {
+    margin-bottom: 12px;
+}
