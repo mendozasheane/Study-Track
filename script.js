@@ -694,7 +694,7 @@ function dashboard() {
                                 <div class="dashboard-item">
                                     <b>${escapeHTML(exam.subject)}</b>
                                     <p>Date: ${formatExamDate(exam.date)}</p>
-                                    <p>Time: ${escapeHTML(exam.time || "Not specified")}</p>
+                                    <p>Time: ${formatExamTime(exam.time)}</p>
                                 </div>
                             `).join("")
                             : `<p class="empty-message">No exams found.</p>`
@@ -1700,20 +1700,20 @@ else if (page === "Exam Planner" || page === "Exam Schedule") {
                                     ${escapeHTML(exam.section || "All Sections")}
                                 </p>
 
-                                <p>
-                                    <b>Instructor:</b>
-                                    ${escapeHTML(exam.instructor || "Not specified")}
-                                </p>
+                               <p>
+    <b>Instructor:</b>
+    ${escapeHTML(exam.instructor || "Not specified")}
+</p>
 
-                                <p>
-                                    <b>Date:</b>
-                                    ${formatExamDate(exam.date)}
-                                </p>
+<p>
+    <b>Date:</b>
+    ${formatExamDate(exam.date)}
+</p>
 
-                                <p>
-                                    <b>Time:</b>
-                                    ${escapeHTML(exam.time || "Not specified")}
-                                </p>
+<p>
+    <b>Time:</b>
+    ${formatExamTime(exam.time)}
+</p>
 
                                 <p>
                                     <b>Room:</b>
@@ -1846,7 +1846,7 @@ else if (page === "Exam Planner" || page === "Exam Schedule") {
 
                                 <p>
                                     <b>Time:</b>
-                                    ${escapeHTML(exam.time || "Not specified")}
+                                    ${formatExamTime(exam.time)}
                                 </p>
 
                                 <p>
