@@ -1063,53 +1063,312 @@ else if (page === "My Grades") {
         `;
     }
 
-    // MY TASK
-    else if (page === "My Task") {
+    // MY TASK / MANAGE TASKS
+else if (page === "My Task" || page === "Manage Tasks") {
+
+    // ==================================
+    // TEACHER VIEW
+    // ==================================
+    if (currentRole === "teacher") {
 
         content.innerHTML = `
             <div class="card">
-                <h3>My Task</h3>
+                <h3>Manage Student Tasks</h3>
+                <p>Create activities and assign them to students.</p>
 
-                ${tasks.map((task, index) => `
-                    <div class="card">
-                        <p><b>${task.title}</b> — ${task.status}</p>
+                <label>Task Title</label>
+                <input id="taskTitle" placeholder="Enter task title">
 
-                        ${task.status !== "Completed" ? `
-                            <button class="btn complete-task" data-index="${index}">
-                                Complete
+                <label>Subject</label>
+                <input id="taskSubject" placeholder="Enter subject">
+
+                <label>Description</label>
+                <textarea id="taskDescription"
+                    placeholder="Enter task instructions"></textarea>
+
+                <label>Assigned Section</label>
+                <select id="taskSection">
+                    <option value="">Select Section</option>
+                    ${getAvailableSections().map(section => `
+                        <option value="${escapeHTML(section)}">
+                            ${escapeHTML(section)}
+                        </option>
+                    `).join("")}
+                </select>
+
+                <label>Due Date</label>
+                <input type="date" id="taskDueDate">
+
+                <button class="btn" id="addTaskBtn">
+                    Add Task
+                </button>
+            </div>
+
+            <div class="card">
+                <h3>Created Tasks</h3>
+
+                ${tasks.length === 0
+                    ? `<p class="empty-message">No tasks created yet.</p>`
+                    : tasks.map((task, index) => `
+                        <div class="task-card">
+                            <h3>${escapeHTML(task.title)}</h3>
+                            <p><b>Subject:</b> ${escapeHTML(task.subject)}</p>
+                            <p><b>Description:</b> ${escapeHTML(task.description)}</p>
+                            <p><b>Section:</b> ${escapeHTML(task.section)}</p>
+                            <p><b>Due Date:</b> ${escapeHTML(task.dueDate)}</p>
+
+                            <p>
+                                <b>Submitted:</b>
+                                ${task.submissions?.length || 0}
+                            </p>
+
+                            <button class="btn btn-danger delete-task"
+                                data-index="${index}">
+                                Delete Task
                             </button>
-                        ` : ""}
 
-                        <button class="btn delete-task" data-index="${index}">
-                            Delete
-                        </button>
-                    </div>
-                `).join("")}
+                            <h4>Student Submissions</h4>
 
-                <label>Add New Task</label>
-                <input id="newTask" placeholder="Enter task name">
-                <button class="btn" id="addTaskBtn">Add Task</button>
+                            ${
+                                task.submissions?.length
+                                ? task.submissions.map(sub => `
+                                    <div class="submission-box">
+                                        <p><b>Student:</b>
+                                            ${escapeHTML(sub.studentName)}
+                                        </p>
+                                        <p><b>Student ID:</b>
+                                            ${escapeHTML(sub.studentId)}
+                                        </p>
+                                        <p><b>File:</b>
+                                            ${escapeHTML(sub.fileName)}
+                                        </p>
+                                        <p><b>Status:</b>
+                                            <span class="task-completed">Completed</span>
+                                        </p>
+                                        <a href="${sub.fileData}"
+                                            download="${escapeHTML(sub.fileName)}">
+                                            Download Submitted File
+                                        </a>
+                                    </div>
+                                `).join("")
+                                : `<p class="empty-message">No submissions yet.</p>`
+                            }
+                        </div>
+                    `).join("")
+                }
             </div>
         `;
 
+        // ADD TASK
         document.getElementById("addTaskBtn")
-            .addEventListener("click", addTask);
+            .addEventListener("click", function() {
 
-        document.querySelectorAll(".complete-task").forEach(button => {
-            button.addEventListener("click", function() {
-                tasks[Number(this.dataset.index)].status = "Completed";
-                showPage("My Task");
-            });
-        });
+                const title = document.getElementById("taskTitle").value.trim();
+                const subject = document.getElementById("taskSubject").value.trim();
+                const description = document.getElementById("taskDescription").value.trim();
+                const section = document.getElementById("taskSection").value;
+                const dueDate = document.getElementById("taskDueDate").value;
 
-        document.querySelectorAll(".delete-task").forEach(button => {
-            button.addEventListener("click", function() {
-                tasks.splice(Number(this.dataset.index), 1);
-                showPage("My Task");
+                if (!title || !subject || !description || !section || !dueDate) {
+                    alert("Please complete all task information.");
+                    return;
+                }
+
+                tasks.push({
+                    id: Date.now(),
+                    title,
+                    subject,
+                    description,
+                    section,
+                    dueDate,
+                    submissions: []
+                });
+
+                saveTasks();
+
+                alert("Task added successfully!");
+
+                showPage("Manage Tasks");
             });
-        });
+
+        // DELETE TASK
+        document.querySelectorAll(".delete-task")
+            .forEach(button => {
+
+                button.addEventListener("click", function() {
+
+                    const index = Number(this.dataset.index);
+
+                    if (!confirm("Are you sure you want to delete this task?")) {
+                        return;
+                    }
+
+                    tasks.splice(index, 1);
+                    saveTasks();
+
+                    showPage("Manage Tasks");
+                });
+
+            });
+
     }
 
+    // ==================================
+    // STUDENT VIEW
+    // ==================================
+    else {
+
+        const currentStudent = studentsList.find(
+            s => s.id === student.id
+        );
+
+        const studentSection = currentStudent?.section || "";
+
+        const studentTasks = tasks.filter(
+            task => task.section === studentSection
+        );
+
+        content.innerHTML = `
+            <div class="card">
+                <h3>My Tasks</h3>
+                <p>Activities assigned by your teacher.</p>
+
+                ${
+                    studentTasks.length === 0
+                    ? `<p class="empty-message">No tasks assigned to your section yet.</p>`
+                    : studentTasks.map(task => {
+
+                        const submission = (task.submissions || []).find(
+                            sub => sub.studentId === student.id
+                        );
+
+                        return `
+                            <div class="task-card">
+
+                                <h3>${escapeHTML(task.title)}</h3>
+
+                                <p><b>Subject:</b> ${escapeHTML(task.subject)}</p>
+
+                                <p><b>Description:</b> ${escapeHTML(task.description)}</p>
+
+                                <p><b>Due Date:</b> ${escapeHTML(task.dueDate)}</p>
+
+                                ${
+                                    submission
+                                    ? `
+                                        <span class="task-completed">Completed</span>
+                                        <p>Submitted File: ${escapeHTML(submission.fileName)}</p>
+                                        <p>Successfully submitted.</p>
+                                    `
+                                    : `
+                                        <span class="task-pending">Pending</span>
+
+                                        <label>Upload Your Answer</label>
+                                        <input
+                                            type="file"
+                                            class="task-file"
+                                            data-task-id="${task.id}"
+                                            accept=".pdf,.doc,.docx"
+                                        >
+
+                                        <button
+                                            class="btn submit-task"
+                                            data-task-id="${task.id}">
+                                            Submit Task
+                                        </button>
+                                    `
+                                }
+
+                            </div>
+                        `;
+                    }).join("")
+                }
+            </div>
+        `;
+
+        // SUBMIT TASK
+        document.querySelectorAll(".submit-task")
+            .forEach(button => {
+
+                button.addEventListener("click", function() {
+
+                    const taskId = Number(this.dataset.taskId);
+
+                    const task = tasks.find(
+                        t => t.id === taskId
+                    );
+
+                    if (!task) return;
+
+                    const fileInput = document.querySelector(
+                        `.task-file[data-task-id="${taskId}"]`
+                    );
+
+                    const file = fileInput?.files[0];
+
+                    if (!file) {
+                        alert("Please select a file first.");
+                        return;
+                    }
+
+                    const allowedExtensions = ["pdf", "doc", "docx"];
+                    const extension = file.name.split(".").pop().toLowerCase();
+
+                    if (!allowedExtensions.includes(extension)) {
+                        alert("Only PDF, DOC, and DOCX files are allowed.");
+                        return;
+                    }
+
+                    // Limit prototype uploads to 1 MB
+                    if (file.size > 1024 * 1024) {
+                        alert("File is too large. Maximum file size is 1 MB.");
+                        return;
+                    }
+
+                    const alreadySubmitted = (task.submissions || []).some(
+                        sub => sub.studentId === student.id
+                    );
+
+                    if (alreadySubmitted) {
+                        alert("You have already submitted this task.");
+                        return;
+                    }
+
+                    const reader = new FileReader();
+
+                    reader.onload = function() {
+
+                        if (!task.submissions) {
+                            task.submissions = [];
+                        }
+
+                        task.submissions.push({
+                            studentId: student.id,
+                            studentName: student.name,
+                            fileName: file.name,
+                            fileData: reader.result,
+                            submittedAt: new Date().toISOString()
+                        });
+
+                        saveTasks();
+
+                        alert("Task submitted successfully!");
+
+                        showPage("My Task");
+                    };
+
+                    reader.onerror = function() {
+                        alert("Unable to read the selected file.");
+                    };
+
+                    reader.readAsDataURL(file);
+
+                });
+
+            });
+
+    }
+}
     // EXAM PLANNER / EXAM SCHEDULE
 else if (page === "Exam Planner" || page === "Exam Schedule") {
 
