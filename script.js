@@ -1330,38 +1330,57 @@ else if (page === "My Profile") {
 // MY GRADES
 else if (page === "My Grades") {
 
-        const visibleGrades = grades.filter(
-            g => g.student === student.name
-        );
+    const visibleGrades = grades.filter(
+        g => g.student === student.name
+    );
 
-        content.innerHTML = `
-            <div class="card">
-                <h3>My Grades</h3>
+    content.innerHTML = `
+        <div class="card">
+            <h3>My Grades</h3>
+            <p>View your recorded academic grades.</p>
 
-                <div class="table-container">
-                    <table>
-                        <tr>
-                            <th>Subject</th>
-                            <th>Midterm</th>
-                            <th>Final</th>
-                            <th>Average</th>
-                            <th>Remarks</th>
-                        </tr>
+            ${
+                visibleGrades.length > 0
+                ? `
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Midterm</th>
+                                    <th>Final</th>
+                                    <th>Average</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
 
-                        ${visibleGrades.map(g => `
-                            <tr>
-                                <td>${g.subject}</td>
-                                <td>${g.midterm}</td>
-                                <td>${g.final}</td>
-                                <td>${g.average}</td>
-                                <td>${g.remarks}</td>
-                            </tr>
-                        `).join("")}
-                    </table>
-                </div>
-            </div>
-        `;
-    }
+                            <tbody>
+                                ${visibleGrades.map(g => `
+                                    <tr>
+                                        <td>${escapeHTML(g.subject)}</td>
+                                        <td>${g.midterm}</td>
+                                        <td>${g.final}</td>
+                                        <td>${g.average}</td>
+                                        <td>${escapeHTML(g.remarks)}</td>
+                                    </tr>
+                                `).join("")}
+                            </tbody>
+                        </table>
+                    </div>
+                `
+                : `
+                    <div class="empty-message">
+                        <h3>No Grades Available</h3>
+                        <p>
+                            Your grades will appear here once
+                            your teacher has recorded them.
+                        </p>
+                    </div>
+                `
+            }
+        </div>
+    `;
+}
 
     // ACADEMIC PERFORMANCE
     else if (page === "Academic Performance") {
