@@ -1111,62 +1111,129 @@ else if (page === "My Grades") {
     }
 
     // EXAM PLANNER / EXAM SCHEDULE
-    else if (page === "Exam Planner" || page === "Exam Schedule") {
+else if (page === "Exam Planner" || page === "Exam Schedule") {
+
+    // TEACHER VIEW
+    if (currentRole === "teacher") {
 
         content.innerHTML = `
             <div class="card">
-                <h3>${page}</h3>
+                <h3>Exam Schedule Management</h3>
+                <p>Manage and delete completed examinations.</p>
 
-                ${exams.map(exam => `
-                    <p>
-                        <b>${exam.subject}</b><br>
-                        Date: ${formatExamDate(exam.date)}<br>
-                        Time: ${exam.time || "Not specified"}<br>
-                        Room: ${exam.room || "Not specified"}
-                    </p>
-                    <hr>
-                `).join("")}
+                <div class="exam-container">
+                    ${exams.length === 0
+                        ? "<p>No scheduled exams.</p>"
+                        : exams.map((exam, index) => `
+                            <div class="exam-card">
 
-                ${currentRole === "teacher" ? `
-                    <h3>Add Exam Schedule</h3>
+                                <h3>${exam.subject}</h3>
 
-                    <label>Subject</label>
-                    <input id="examSubject" placeholder="Enter subject">
+                                <p>
+                                    <b>Instructor:</b>
+                                    ${exam.instructor || "Not specified"}
+                                </p>
 
-                    <label>Exam Date</label>
-                    <input type="date" id="examDate">
+                                <p>
+                                    <b>Date:</b>
+                                    ${formatExamDate(exam.date)}
+                                </p>
 
-                    <label>Exam Time</label>
-                    <input type="time" id="examTime">
+                                <p>
+                                    <b>Time:</b>
+                                    ${exam.time || "Not specified"}
+                                </p>
 
-                    <label>Room</label>
-                    <input id="examRoom" placeholder="Enter room">
+                                <p>
+                                    <b>Room:</b>
+                                    ${exam.room || "Not specified"}
+                                </p>
 
-                    <button class="btn" id="addExamBtn">Add Exam</button>
-                ` : ""}
+                                <button
+                                    class="delete-exam-btn"
+                                    data-index="${index}">
+                                    Delete Exam
+                                </button>
+
+                            </div>
+                        `).join("")
+                    }
+                </div>
             </div>
         `;
 
-        if (currentRole === "teacher") {
-            document.getElementById("addExamBtn")
-                .addEventListener("click", function() {
+        document.querySelectorAll(".delete-exam-btn")
+            .forEach(button => {
 
-                    const subject = document.getElementById("examSubject").value.trim();
-                    const date = document.getElementById("examDate").value;
-                    const time = document.getElementById("examTime").value;
-                    const room = document.getElementById("examRoom").value.trim();
+                button.addEventListener("click", function() {
 
-                    if (!subject || !date || !time || !room) {
-                        alert("Please complete all exam details.");
-                        return;
+                    const index = Number(this.dataset.index);
+
+                    if (confirm("Are you sure you want to delete this exam?")) {
+
+                        exams.splice(index, 1);
+
+                        localStorage.setItem(
+                            "studyTrackExams",
+                            JSON.stringify(exams)
+                        );
+
+                        alert("Exam deleted successfully!");
+
+                        showPage("Exam Schedule");
                     }
 
-                    exams.push({ subject, date, time, room });
-                    alert("Exam schedule added!");
-                    showPage("Exam Schedule");
                 });
-        }
+
+            });
+
     }
+
+    // STUDENT VIEW
+    else {
+
+        content.innerHTML = `
+            <div class="card">
+                <h3>Exam Planner</h3>
+
+                <div class="exam-container">
+
+                    ${exams.length === 0
+                        ? "<p>No scheduled exams yet.</p>"
+                        : exams.map(exam => `
+                            <div class="exam-card">
+
+                                <h3>${exam.subject}</h3>
+
+                                <p>
+                                    <b>Instructor:</b>
+                                    ${exam.instructor || "Not specified"}
+                                </p>
+
+                                <p>
+                                    <b>Date:</b>
+                                    ${formatExamDate(exam.date)}
+                                </p>
+
+                                <p>
+                                    <b>Time:</b>
+                                    ${exam.time || "Not specified"}
+                                </p>
+
+                                <p>
+                                    <b>Room:</b>
+                                    ${exam.room || "Not specified"}
+                                </p>
+
+                            </div>
+                        `).join("")
+                    }
+
+                </div>
+            </div>
+        `;
+    }
+}
 
     // STUDY PLANNER
     else if (page === "Study Planner") {
