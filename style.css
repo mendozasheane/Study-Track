@@ -1311,4 +1311,64 @@ textarea {
     }
 }
 
+/* =================================
+   DASHBOARD FILTER DESIGN
+================================= */
+
+.dashboard-filter-card {
+    max-width: 100%;
+}
+
+.dashboard-filter-card select,
+#studentTaskFilter,
+#studentExamFilter,
+#teacherTaskFilter {
+    width: 100%;
+    max-width: 300px;
+    padding: 11px 14px;
+    border: 1px solid #d5deea;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #17335d;
+    margin-top: 8px;
+    margin-bottom: 15px;
+}
+
+.dashboard-records {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.dashboard-item {
+    background: #f8faff;
+    border: 1px solid #e1e8f0;
+    border-radius: 12px;
+    padding: 17px;
+    line-height: 1.7;
+}
+
+.dashboard-item b {
+    color: #17335d;
+}
+
+.dashboard-item p {
+    color: #58708d;
+    margin-top: 5px;
+}
+
+#content > .grid > .stat {
+    border-radius: 14px;
+    border: 1px solid #e1e8f0;
+    box-shadow: 0 3px 12px rgba(23, 51, 93, 0.06);
+}
+
+@media (max-width: 700px) {
+    .dashboard-records {
+        grid-template-columns: 1fr;
+    }
+}
+
+
 
