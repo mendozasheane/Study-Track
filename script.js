@@ -967,10 +967,10 @@ else if (page === "My Profile") {
             alert("Teacher profile updated successfully!");
 
             showPage("My Profile");
-        });
+         });
+    }
+}
 
-    } 
-} 
     // MY GRADES
     else if (page === "My Grades") {
 
@@ -1250,7 +1250,7 @@ else if (page === "My Profile") {
         });
     }
 
-   // ==========================================
+// ==========================================
 // MANAGE STUDENTS
 // ==========================================
 
