@@ -62,21 +62,17 @@ let student = {
 };
 
 
-// SAMPLE TASKS
-let tasks = [
-    {
-        title: "Programming Activity",
-        status: "Pending"
-    },
-    {
-        title: "Contemporary",
-        status: "Completed"
-    },
-    {
-        title: "UTS",
-        status: "Pending"
-    }
-];
+// TASK RECORDS
+let tasks = JSON.parse(
+    localStorage.getItem("studyTrackTasks")
+) || [];
+
+function saveTasks() {
+    localStorage.setItem(
+        "studyTrackTasks",
+        JSON.stringify(tasks)
+    );
+}
 
 
 // SAMPLE GRADES
